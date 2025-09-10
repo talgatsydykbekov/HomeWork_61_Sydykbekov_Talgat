@@ -1,5 +1,6 @@
-﻿using HomeWork_60_Identity.Models;
-using Identity_60.ViewModels;
+﻿
+using HomeWork_61_Instagram.Models;
+using HomeWork_61_Instagram.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
@@ -8,13 +9,15 @@ namespace HomeWork_60_Identity.Controllers;
 
 public class AccountController : Controller
 {
+    private readonly IWebHostEnvironment _env;
     private readonly UserManager<MyUser> _userManager;
     private readonly SignInManager<MyUser> _signInManager;
 
-    public AccountController(UserManager<MyUser> userManager, SignInManager<MyUser> signInManager)
+    public AccountController(UserManager<MyUser> userManager, SignInManager<MyUser> signInManager, IWebHostEnvironment env)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _env = env;
     }
     [HttpGet]
     public IActionResult Register()
@@ -24,21 +27,41 @@ public class AccountController : Controller
     
     
     [HttpPost]
-    public async Task<IActionResult> Register(RegisterViewModel model)
+    public async Task<IActionResult> Register(RegisterViewModel model, IFormFile file)
     {
         if (ModelState.IsValid)
         {
+            string? relativePath = null;
+            string uploadedFileName = Path.Combine(_env.WebRootPath, "images/avatars");
+            if (!Directory.Exists(uploadedFileName))
+            {
+                Directory.CreateDirectory(uploadedFileName);
+            }
+            
+            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            
+            string filesavePath = Path.Combine(uploadedFileName, fileName);
+            using (var stream = new FileStream(filesavePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            relativePath = Path.Combine("images/avatars", fileName.Replace("\\", "/"));
             MyUser user = new MyUser
             {
+               UserName = model.Nickname,
+                Name = model.Name,
                 Email = model.Email,
-                UserName = model.Email,
+                Avatar = relativePath,
+                Desc = model.Desc,
+                Gender = model.Gender,
+                PhoneNumber = model.PhoneNumber,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "user");
                 await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Task");
+                return RedirectToAction("Index", "Home");
             }
             foreach (var error in result.Errors)
                 ModelState.AddModelError(string.Empty, error.Description);
@@ -58,7 +81,17 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            MyUser user = await _userManager.FindByEmailAsync(model.Email);
+            MyUser user = await _userManager.FindByEmailAsync(model.EmailOrLogin);
+            if (user == null)
+            {
+                user = await _userManager.FindByNameAsync(model.EmailOrLogin);
+            }
+            if (user == null)
+            {
+                ModelState.AddModelError("","Пользователь не найден");
+                return View(model);
+            }
+            
             SignInResult result = await _signInManager.PasswordSignInAsync(
                 user, model.Password, 
                 model.RememberMe,
@@ -71,7 +104,7 @@ public class AccountController : Controller
                     return Redirect(model.ReturnUrl);
                 }
 
-                return RedirectToAction("Index", "Task");
+                return RedirectToAction("Index", "Home");
             }
             ModelState.AddModelError("", "Неправильный логин или пароль");
         }

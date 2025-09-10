@@ -27,6 +27,20 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                 </ul>
+                <div class="login_group d-flex align-items-center gap-3">
+                    @if(User.Identity.IsAuthenticated)
+                    {
+                        <span class="me-2">Привет, <strong>@User.Identity.Name</strong></span>
+                        <form method="post" asp-controller="Account" asp-action="LogOff" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Выход</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Вход</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-success btn-sm">Регистрация</a>
+                    }
+                </div>
             </div>
         </div>
     </nav>
