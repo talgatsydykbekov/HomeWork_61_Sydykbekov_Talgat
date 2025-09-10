@@ -14,4 +14,6 @@ public class MyUser : IdentityUser<int>
    
      public string? Name { get; set; }
      public Gender? Gender { get; set; }
+     
+     List<Post> Posts = new List<Post>();
 }
