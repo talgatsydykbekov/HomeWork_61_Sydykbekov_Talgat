@@ -9,10 +9,10 @@ public class Post
     public DateTime Ceated_Datetime { get; set; }
     [Required(ErrorMessage = "Выберите файл")]
     public string Content { get; set; }
-    public string Desc { get; set; }
+    public string? Desc { get; set; }
     public int UserId { get; set; }
     
     
     
-    public MyUser User { get; set; }
+    public MyUser? User { get; set; }
 }

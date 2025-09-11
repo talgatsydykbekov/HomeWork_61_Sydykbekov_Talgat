@@ -1,0 +1,45 @@
+﻿@model MyUser
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+
+
+<div class="container mt-4">
+
+    <!-- Профиль пользователя -->
+    <div class="d-flex align-items-center mb-4" style="max-width: 600px; margin: auto;">
+        <img src="~/@Model.Avatar" class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;" alt="avatar">
+        <div>
+            <h4 class="mb-1">@Model.UserName</h4>
+            <p class="text-muted mb-0">@Model.Desc</p>
+            <h4 class="mb-1">@Model.Name</h4>
+        </div>
+        
+    </div>
+    <!-- Посты -->
+    @if (Model.Posts == null || Model.Posts.Count == 0)
+    {
+        <h5 class="text-center text-muted">Нет постов</h5>
+    }
+    else
+    {
+        <div class="row g-0"> <!-- g-0 убирает отступы между колонками -->
+            @foreach (var con in Model.Posts)
+            {
+                <div class="col-4"> <!-- 3 поста в ряд -->
+                    <div class="card border-0">
+                        <img src="~/@con.Content" 
+                             class="w-100" 
+                             style="aspect-ratio: 1 / 1; object-fit: cover;" 
+                             alt="post img" />
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <div class="ms-auto">
+        <a class="btn btn-success btn-sm" asp-action="Create" asp-controller="Post">Добавить пост</a>
+    </div>
+</div>
