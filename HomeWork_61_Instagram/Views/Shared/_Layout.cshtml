@@ -20,20 +20,32 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
+                    <form asp-action="SearchUsers" asp-controller="User" method="post">
+                        <div class="d-flex flex-column flex-grow-1">
+                            <label for="searchString" class="form-label fw-bold mb-1">Поиск</label>
+                            <input type="text" id="searchString" name="searchTitle" class="form-control" placeholder="Введите заголовок задачи">
+                            <button class="btn-success">Поиск</button>
+                        </div>
+                    </form>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Privacy</a>
-                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">
+                                <img src="images/Profile/people.png" alt="Мой профиль" width="40" height="40">
+                            </a>
+                        </li>
+                    }
                 </ul>
                 <div class="login_group d-flex align-items-center gap-3">
                     @if(User.Identity.IsAuthenticated)
                     {
-                        <span class="me-2">Привет, <strong>@User.Identity.Name</strong></span>
+                        
                         <form method="post" asp-controller="Account" asp-action="LogOff" class="d-inline">
                             <button type="submit" class="btn btn-outline-danger btn-sm">Выход</button>
                         </form>
