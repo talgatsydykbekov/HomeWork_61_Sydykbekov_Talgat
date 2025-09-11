@@ -130,6 +130,29 @@ namespace HomeWork_61_Instagram.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("HomeWork_61_Instagram.Models.UserFollow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("FollowedId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("FollowingId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowedId");
+
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("UserFollows");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -271,6 +294,21 @@ namespace HomeWork_61_Instagram.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HomeWork_61_Instagram.Models.UserFollow", b =>
+                {
+                    b.HasOne("HomeWork_61_Instagram.Models.MyUser", "Followed")
+                        .WithMany()
+                        .HasForeignKey("FollowedId");
+
+                    b.HasOne("HomeWork_61_Instagram.Models.MyUser", "Following")
+                        .WithMany()
+                        .HasForeignKey("FollowingId");
+
+                    b.Navigation("Followed");
+
+                    b.Navigation("Following");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
