@@ -18,14 +18,6 @@ public class UserController : Controller
     // GET
     public IActionResult Index()
     {
-        
-        // if (!string.IsNullOrEmpty(searchTitle))
-        // {
-        //   users = _userManager.Users.Where(u => u.UserName == searchTitle
-        //                                   || u.Email == searchTitle
-        //                                   || u.Desc == searchTitle
-        //                                   || u.Name == searchTitle);
-        // }
         var userid = int.Parse(_userManager.GetUserId(User)); 
         var users = _userManager.Users.Include(p => p.Posts)
             .FirstOrDefault(u => u.Id == userid);
