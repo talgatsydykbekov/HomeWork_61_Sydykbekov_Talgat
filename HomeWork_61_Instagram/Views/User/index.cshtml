@@ -16,6 +16,11 @@
             <p class="text-muted mb-0">@Model.Desc</p>
             <h4 class="mb-1">@Model.Name</h4>
         </div>
+        div>
+        <h4 class="mb-1">@Model.Posts.Count Публикаций</h4>
+        <p class="text-muted mb-0"> Подписчиков</p>
+        <h4 class="mb-1">Подписки</h4>
+    </div>
         
     </div>
     
@@ -42,4 +47,5 @@
     <div class="ms-auto">
         <a class="btn btn-success btn-sm" asp-action="Create" asp-controller="Post">Добавить пост</a>
     </div>
-</div>
+
+

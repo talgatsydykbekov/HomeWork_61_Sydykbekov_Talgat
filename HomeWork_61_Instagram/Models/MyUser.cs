@@ -16,4 +16,6 @@ public class MyUser : IdentityUser<int>
      public Gender? Gender { get; set; }
 
      public List<Post>? Posts { get; set ;}
+     public List<UserFollow>? Following { get; set ;}
+     public List<UserFollow>? Followers { get; set; }
 }

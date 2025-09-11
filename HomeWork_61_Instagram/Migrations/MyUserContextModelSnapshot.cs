@@ -299,12 +299,14 @@ namespace HomeWork_61_Instagram.Migrations
             modelBuilder.Entity("HomeWork_61_Instagram.Models.UserFollow", b =>
                 {
                     b.HasOne("HomeWork_61_Instagram.Models.MyUser", "Followed")
-                        .WithMany()
-                        .HasForeignKey("FollowedId");
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowedId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("HomeWork_61_Instagram.Models.MyUser", "Following")
-                        .WithMany()
-                        .HasForeignKey("FollowingId");
+                        .WithMany("Following")
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Followed");
 
@@ -364,6 +366,10 @@ namespace HomeWork_61_Instagram.Migrations
 
             modelBuilder.Entity("HomeWork_61_Instagram.Models.MyUser", b =>
                 {
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

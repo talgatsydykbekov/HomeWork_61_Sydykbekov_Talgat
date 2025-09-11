@@ -11,4 +11,20 @@ public class MyUserContext : IdentityDbContext<MyUser, IdentityRole<int>, int>
     
     public MyUserContext(DbContextOptions<MyUserContext> options) : base(options) { }
 
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        
+        builder.Entity<UserFollow>()
+            .HasOne(uf => uf.Following)
+            .WithMany(u => u.Following)
+            .HasForeignKey(uf => uf.FollowingId)
+            .OnDelete(DeleteBehavior.NoAction);
+        
+        builder.Entity<UserFollow>()
+            .HasOne(uf => uf.Followed)
+            .WithMany(u => u.Followers)
+            .HasForeignKey(uf => uf.FollowedId)
+            .OnDelete(DeleteBehavior.NoAction);
+    }
 }
