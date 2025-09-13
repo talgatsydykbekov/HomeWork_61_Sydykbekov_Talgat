@@ -50,6 +50,10 @@ else
                                     <button type="submit" class="btn p-0 me-3 like-btn">
                                         <i class="bi bi-heart fs-4"></i>
                                     </button>
+                                    <button class="btn p-0 view-comments-btn" asp-controller="Comment" asp-action="Index">
+                                        <input type="hidden" name="PostId" value="@post.Id"/>
+                                        <i class="bi bi-chat fs-4"></i>
+                                    </button>
                                     @if (TempData["ErrorMessage"] != null)
                                     {
                                         <h5 class="text-danger">@TempData["ErrorMessage"]</h5>
@@ -60,9 +64,7 @@ else
                                     }
                                 </form>
 
-                                <button class="btn p-0 view-comments-btn">
-                                    <i class="bi bi-chat fs-4"></i> Смотреть все комментарии
-                                </button>
+                                
                             </div>
                         </div>
                         <div>
@@ -70,7 +72,7 @@ else
                         </div>
 
                         <div class="card-footer bg-white border-0">
-                            <form asp-action="AddComment" asp-controller="Reaction" asp-route-id="@post.Id" method="post" class="d-flex">
+                            <form asp-action="AddComment" asp-controller="Comment" asp-route-PostId="@post.Id" method="post" class="d-flex">
                                 <input type="text" name="commentText" class="form-control me-2" placeholder="Добавьте комментарий..."/>
                                 <button type="submit" class="btn btn-primary bi bi-send fs-4"></button>
                             </form>

@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Server.Kestrel.Core
+@model List<Comments>
+
+@{
+    ViewBag.Title = "Коментарии";
+}
+
+@if (Model == null)
+{
+    <h1>Нет комментариев</h1>
+}
+else
+{
+    <div class="comments mt-2">
+        @foreach (var comment in Model)
+        {
+            if (comment == null)
+            {
+                <h1>Нет комментариев</h1>
+            }
+            <div class="d-flex align-items-start mb-2">
+                <img src="~/@comment.User.Avatar"
+                     alt="avatar"
+                     class="rounded-circle me-2"
+                     width="32" height="32"
+                     style="object-fit: cover;" />
+
+                <div>
+                    <strong>@comment.User.UserName</strong>
+                    <span>@comment.Comment</span>
+                    <div class="text-muted small">
+                        @comment.Created_DateTime.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+}

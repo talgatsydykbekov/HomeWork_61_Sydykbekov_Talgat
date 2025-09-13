@@ -22,6 +22,36 @@ namespace HomeWork_61_Instagram.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HomeWork_61_Instagram.Models.Comments", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created_DateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("HomeWork_61_Instagram.Models.MyUser", b =>
                 {
                     b.Property<int>("Id")
@@ -308,6 +338,25 @@ namespace HomeWork_61_Instagram.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HomeWork_61_Instagram.Models.Comments", b =>
+                {
+                    b.HasOne("HomeWork_61_Instagram.Models.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HomeWork_61_Instagram.Models.MyUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HomeWork_61_Instagram.Models.Post", b =>
                 {
                     b.HasOne("HomeWork_61_Instagram.Models.MyUser", "User")
@@ -419,6 +468,8 @@ namespace HomeWork_61_Instagram.Migrations
 
             modelBuilder.Entity("HomeWork_61_Instagram.Models.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Reactions");
                 });
 #pragma warning restore 612, 618

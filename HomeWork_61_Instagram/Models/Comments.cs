@@ -3,10 +3,10 @@
 public class Comments
 {
     public int Id { get; set; }
-    public string Content { get; set; }
+    public string Comment { get; set; }
     public int UserId { get; set; }
     public int PostId { get; set; }
-    
+    public DateTime Created_DateTime { get; set; }
     
     
     
