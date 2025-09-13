@@ -8,6 +8,7 @@ public class MyUserContext : IdentityDbContext<MyUser, IdentityRole<int>, int>
 {
     public DbSet<Post> Posts { get; set; }
     public  DbSet<UserFollow> UserFollows { get; set; }
+    public DbSet<Reactions> Reactions { get; set; }
     
     public MyUserContext(DbContextOptions<MyUserContext> options) : base(options) { }
 

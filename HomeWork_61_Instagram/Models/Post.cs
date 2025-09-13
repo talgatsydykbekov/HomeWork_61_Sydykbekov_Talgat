@@ -11,7 +11,7 @@ public class Post
     public string Content { get; set; }
     public string? Desc { get; set; }
     public int UserId { get; set; }
-    
+    public List<Reactions>? Reactions { get; set; }
     
     
     public MyUser? User { get; set; }
