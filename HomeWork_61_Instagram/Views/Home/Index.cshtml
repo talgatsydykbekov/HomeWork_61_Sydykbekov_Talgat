@@ -1,8 +1,89 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<Post> 
+
+@{
+    ViewData["Title"] = "Лента";
+}
+@if (Model == null || Model.Count == 0)
+{
+    <h5 class="text-center text-muted">Нет постов</h5>
+}
+else
+{
+    <div class="row justify-content-center">
+        @foreach (var post in Model)
+        {
+            @if (post == null)
+            {
+                <h1>Нет постов</h1>
+            }
+            else
+            {
+                <div class="col-6 mb-4">
+                    <div class="card shadow-sm rounded-3 border-0">
+
+                        <div class="card-header bg-white border-0 d-flex align-items-center">
+                            @if (post.User == null)
+                            {
+                                <h1>ир</h1>
+                            }
+                            else
+                            {
+                                <img src="~/@post.User.Avatar"
+                                     alt="avatar"
+                                     class="rounded-circle me-2"
+                                     width="40" height="40"
+                                     style="object-fit: cover;"/>
+                                <strong>@post.User.Name</strong>
+                            }
+                            
+                        </div>
+
+                        <img src="~/@post.Content"
+                             class="w-100"
+                             style="aspect-ratio: 1/1; object-fit: cover;"
+                             alt="post img"/>
+
+                        <div class="card-body pb-2">
+                            <div class="d-flex align-items-center mb-2">
+                                <button class="btn p-0 me-3 like-btn" onclick="toggleLike(this)">
+                                    <i class="bi bi-heart fs-4"></i>
+                                </button>
+                                <button class="btn p-0 view-comments-btn">
+                                    <i class="bi bi-chat fs-4"></i> Смотреть все комментарии
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <p>@post.Desc</p>
+                        </div>
+
+                        <div class="card-footer bg-white border-0">
+                            <form asp-action="AddComment" asp-route-id="@post.Id" method="post" class="d-flex">
+                                <input type="text" name="commentText" class="form-control me-2" placeholder="Добавьте комментарий..."/>
+                                <button type="submit" class="btn btn-primary bi bi-send fs-4"></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    
+    <script>
+    function toggleLike(btn) {
+        let icon = btn.querySelector("i");
+        if (icon.classList.contains("bi-heart")) {
+            icon.classList.remove("bi-heart");
+            icon.classList.add("bi-heart-fill");
+            icon.style.color = "red";
+        } else {
+            icon.classList.remove("bi-heart-fill");
+            icon.classList.add("bi-heart");
+            icon.style.color = "black";
+        }
+    }
+
+    </script>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>

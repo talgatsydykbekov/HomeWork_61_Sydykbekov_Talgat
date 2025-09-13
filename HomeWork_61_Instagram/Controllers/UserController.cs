@@ -1,4 +1,5 @@
 ﻿using HomeWork_61_Instagram.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,18 +16,23 @@ public class UserController : Controller
         _userManager = userManager;
         _context = context;
     }
+    [Authorize]
     // GET
     public IActionResult Index()
     {
         var userid = int.Parse(_userManager.GetUserId(User)); 
         var users = _userManager.Users.Include(p => p.Posts)
+            .Include(p => p.Followers)
+            .Include(p => p.Following)
             .FirstOrDefault(u => u.Id == userid);
         return View(users);
     }
-
+    [Authorize]
     public async Task<IActionResult> SearchUsers(string? searchTitle)
     {
-        var users = _userManager.Users.Include(p => p.Posts).AsQueryable();
+        var users = _userManager.Users.Include(p => p.Posts)
+            .Include(p => p.Followers)
+            .Include(p => p.Following).AsQueryable();
         
         if (!string.IsNullOrEmpty(searchTitle))
         { 
@@ -37,12 +43,15 @@ public class UserController : Controller
         }
          return View(await users.ToListAsync());
     }
-
+    [Authorize]
     public IActionResult Profile(int id)
     {
         if (!(id == int.Parse(_userManager.GetUserId(User))))
         {
-            var user = _userManager.Users.Include(p => p.Posts)
+            var user = _userManager.Users
+                .Include(p => p.Posts)
+                .Include(p => p.Followers)
+                .Include(p => p.Following)
                 .FirstOrDefault(u => u.Id == id);
             return View(user);
         }

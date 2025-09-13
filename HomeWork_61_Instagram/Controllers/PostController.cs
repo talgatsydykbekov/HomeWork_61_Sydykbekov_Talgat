@@ -1,5 +1,6 @@
 ﻿using HomeWork_61_Instagram.Models;
 using HomeWork_61_Instagram.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,12 +25,12 @@ public class PostController : Controller
     {
         return View();
     }
-
+    [Authorize]
     public IActionResult Create()
     {
         return View();
     }
-
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(PostViewModel post, IFormFile file)

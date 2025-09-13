@@ -1,0 +1,26 @@
+﻿@model List<UserFollow>
+
+@{
+    ViewBag.Title = "Подписчики";
+}
+@if (Model == null)
+{
+    <h1>НЕт данных</h1>
+}
+else
+{
+
+    <h2>Подписки</h2>
+    <ul>
+        @foreach (var f in Model)
+        {
+            @if (f.Followed != null)
+            {
+                <li>
+                    <img src="~/@f.Followed.Avatar" width="40" height="40"/>
+                    @f.Followed.UserName
+                </li>
+            }
+        }
+    </ul>
+}

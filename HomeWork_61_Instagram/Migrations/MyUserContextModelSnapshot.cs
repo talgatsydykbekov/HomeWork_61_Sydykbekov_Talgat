@@ -141,14 +141,14 @@ namespace HomeWork_61_Instagram.Migrations
                     b.Property<int?>("FollowedId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("FollowingId")
+                    b.Property<int?>("FollowerId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FollowedId");
 
-                    b.HasIndex("FollowingId");
+                    b.HasIndex("FollowerId");
 
                     b.ToTable("UserFollows");
                 });
@@ -303,14 +303,14 @@ namespace HomeWork_61_Instagram.Migrations
                         .HasForeignKey("FollowedId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("HomeWork_61_Instagram.Models.MyUser", "Following")
+                    b.HasOne("HomeWork_61_Instagram.Models.MyUser", "Follower")
                         .WithMany("Following")
-                        .HasForeignKey("FollowingId")
+                        .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Followed");
 
-                    b.Navigation("Following");
+                    b.Navigation("Follower");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

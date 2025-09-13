@@ -7,18 +7,18 @@ namespace HomeWork_61_Instagram.Models;
 public class MyUserContext : IdentityDbContext<MyUser, IdentityRole<int>, int>
 {
     public DbSet<Post> Posts { get; set; }
-    DbSet<UserFollow> UserFollows { get; set; }
+    public  DbSet<UserFollow> UserFollows { get; set; }
     
     public MyUserContext(DbContextOptions<MyUserContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder);
+        base.OnModelCreating(builder);    
         
         builder.Entity<UserFollow>()
-            .HasOne(uf => uf.Following)
+            .HasOne(uf => uf.Follower)
             .WithMany(u => u.Following)
-            .HasForeignKey(uf => uf.FollowingId)
+            .HasForeignKey(uf => uf.FollowerId)
             .OnDelete(DeleteBehavior.NoAction);
         
         builder.Entity<UserFollow>()

@@ -1,4 +1,6 @@
-﻿@model MyUser
+﻿@using Microsoft.AspNetCore.Identity
+@model MyUser
+@inject UserManager<MyUser> UserManager
 
 @{
     ViewBag.Title = "User profile";
@@ -15,9 +17,47 @@
         <p class="text-muted mb-0">@Model.Desc</p>
         <h4 class="mb-1">@Model.Name</h4>
     </div>
+    @{
+        var someuserid = int.Parse(UserManager.GetUserId(User));
+    }
         
-</div>
+    @if (Model.Following.Any(u => u.FollowedId == someuserid))
+    {
+        <a href="#">Отписаться</a>
+    }
+    else
+    {
+        <form asp-action="Followed" asp-controller="Follow">
+            <input type="hidden" name="followedId" value="@Model.Id">
+            <button class="btn-primary">Подписаться</button>
+        </form>
+    }
     
+</div>
+    @if (Model.Posts == null)
+    {
+        <h4 class="mb-1">0 Публикаций</h4>
+    }
+    else
+    {
+        <h4 class="mb-1">@Model.Posts.Count Публикаций</h4>
+    }
+    @if (Model.Followers == null)
+    {
+        <h4>0 Подписчиков</h4>
+    }
+    else
+    {
+        <p>Подписчики: <a asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id" class="text-decoration-none">@Model.Followers.Count</a></p>
+    }
+    @if (Model.Following == null)
+    {
+        <h4 class="mb-1">0 Подписки</h4>
+    }
+    else
+    {
+        <p>Подписки: <a asp-controller="Follow" asp-action="Followed" asp-route-Id="@Model.Id" class="text-decoration-none">@Model.Following.Count</a></p>
+    }
 @if (Model.Posts == null || Model.Posts.Count == 0)
 {
     <h5 class="text-center text-muted">Нет постов</h5>
