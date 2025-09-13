@@ -35,7 +35,7 @@ else
                                      style="object-fit: cover;"/>
                                 <strong>@post.User.Name</strong>
                             }
-                            
+
                         </div>
 
                         <img src="~/@post.Content"
@@ -45,9 +45,21 @@ else
 
                         <div class="card-body pb-2">
                             <div class="d-flex align-items-center mb-2">
-                                <button class="btn p-0 me-3 like-btn" onclick="toggleLike(this)">
-                                    <i class="bi bi-heart fs-4"></i>
-                                </button>
+                                <form asp-action="AddLike" asp-controller="Reaction" method="post">
+                                    <input type="hidden" name="PostId" value="@post.Id"/>
+                                    <button type="submit" class="btn p-0 me-3 like-btn">
+                                        <i class="bi bi-heart fs-4"></i>
+                                    </button>
+                                    @if (TempData["ErrorMessage"] != null)
+                                    {
+                                        <h5 class="text-danger">@TempData["ErrorMessage"]</h5>
+                                    }
+                                    @if (TempData["SuccessMessage"] != null)
+                                    {
+                                        <h5 class="text-danger">@TempData["SuccessMessage"]</h5>
+                                    }
+                                </form>
+
                                 <button class="btn p-0 view-comments-btn">
                                     <i class="bi bi-chat fs-4"></i> Смотреть все комментарии
                                 </button>
@@ -58,7 +70,7 @@ else
                         </div>
 
                         <div class="card-footer bg-white border-0">
-                            <form asp-action="AddComment" asp-route-id="@post.Id" method="post" class="d-flex">
+                            <form asp-action="AddComment" asp-controller="Reaction" asp-route-id="@post.Id" method="post" class="d-flex">
                                 <input type="text" name="commentText" class="form-control me-2" placeholder="Добавьте комментарий..."/>
                                 <button type="submit" class="btn btn-primary bi bi-send fs-4"></button>
                             </form>
@@ -68,22 +80,4 @@ else
             }
         }
     </div>
-
-    
-    <script>
-    function toggleLike(btn) {
-        let icon = btn.querySelector("i");
-        if (icon.classList.contains("bi-heart")) {
-            icon.classList.remove("bi-heart");
-            icon.classList.add("bi-heart-fill");
-            icon.style.color = "red";
-        } else {
-            icon.classList.remove("bi-heart-fill");
-            icon.classList.add("bi-heart");
-            icon.style.color = "black";
-        }
-    }
-
-    </script>
 }
-
