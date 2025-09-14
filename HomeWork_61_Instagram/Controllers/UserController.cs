@@ -57,4 +57,18 @@ public class UserController : Controller
         }
         return RedirectToAction("Index");
     }
+
+    public IActionResult DetailInfo(int PostId)
+    {
+        if (PostId == null)
+            return NotFound();
+        var post = _context.Posts
+            .Include(u => u.User)
+            .Include(u => u.Comments)
+            .ThenInclude(c => c.User)
+            .FirstOrDefault(p => p.Id == PostId);
+        if (post == null)
+            return NotFound();
+        return View(post);
+    }
 }

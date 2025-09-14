@@ -1,0 +1,112 @@
+﻿@model Post
+
+@{
+    ViewBag.Title = "Detail";
+}
+
+@if (Model == null)
+{
+    <h5 class="text-center text-muted">Нет постов</h5>
+}
+else
+{
+    <div class="row justify-content-center">
+        
+        @if (Model == null)
+        {
+            <h1>Нет постов</h1>
+        }
+        else
+        {
+            <div class="col-6 mb-4">
+                <div class="card shadow-sm rounded-3 border-0">
+
+                    <div class="card-header bg-white border-0 d-flex align-items-center">
+                        @if (Model.User == null)
+                        {
+                            <h1>ир</h1>
+                        }
+                        else
+                        {
+                            <img src="~/@Model.User.Avatar"
+                                 alt="avatar"
+                                 class="rounded-circle me-2"
+                                 width="40" height="40"
+                                 style="object-fit: cover;"/>
+                            <strong>@Model.User.Name</strong>
+                        }
+
+                    </div>
+
+                    <img src="~/@Model.Content"
+                         class="w-100"
+                         style="aspect-ratio: 1/1; object-fit: cover;"
+                         alt="post img"/>
+
+                    <div class="card-body pb-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <form asp-action="AddLike" asp-controller="Reaction" method="post">
+                                <input type="hidden" name="PostId" value="@Model.Id"/>
+                                <button type="submit" class="btn p-0 me-3 like-btn">
+                                    <i class="bi bi-heart fs-4"></i>
+                                </button>
+                                <button class="btn p-0 view-comments-btn" asp-controller="Comment" asp-action="Index">
+                                    <input type="hidden" name="PostId" value="@Model.Id"/>
+                                    <i class="bi bi-chat fs-4"></i>
+                                </button>
+                                @if (TempData["ErrorMessage"] != null)
+                                {
+                                    <h5 class="text-danger">@TempData["ErrorMessage"]</h5>
+                                }
+                                @if (TempData["SuccessMessage"] != null)
+                                {
+                                    <h5 class="text-danger">@TempData["SuccessMessage"]</h5>
+                                }
+                            </form>
+
+
+                        </div>
+                    </div>
+                    <div>
+                        <p>@Model.Desc</p>
+                        <p>@Model.Ceated_Datetime</p>
+                    </div>
+
+                    <div class="card-footer bg-white border-0">
+                        <form asp-action="AddComment" asp-controller="Comment" asp-route-PostId="@Model.Id" method="post" class="d-flex">
+                            <input type="text" name="commentText" class="form-control me-2" placeholder="Добавьте комментарий..."/>
+                            <button type="submit" class="btn btn-primary bi bi-send fs-4"></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+        }
+    </div>
+    @foreach (var comment in Model.Comments)
+    {
+        if(comment == null)
+        {
+            <h1>Нет комментариев</h1>
+        }
+        else
+        {
+            <div class="d-flex align-items-start mb-2">
+                <img src="~/@comment.User.Avatar"
+                     alt="avatar"
+                     class="rounded-circle me-2"
+                     width="32" height="32"
+                     style="object-fit: cover;" />
+
+                <div>
+                    <strong>@comment.User.UserName</strong>
+                    <span>@comment.Comment</span>
+                    <div class="text-muted small">
+                        @comment.Created_DateTime.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+        }
+        
+    }
+}
