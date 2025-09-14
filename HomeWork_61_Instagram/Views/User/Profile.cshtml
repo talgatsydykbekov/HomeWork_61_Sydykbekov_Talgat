@@ -5,79 +5,83 @@
 @{
     ViewBag.Title = "User profile";
 }
-
-
 <div class="container mt-4">
 
-    
-<div class="d-flex align-items-center mb-4" style="max-width: 600px; margin: auto;">
-    <img src="~/@Model.Avatar" class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;" alt="avatar">
-    <div>
-        <h4 class="mb-1">@Model.UserName</h4>
-        <p class="text-muted mb-0">@Model.Desc</p>
-        <h4 class="mb-1">@Model.Name</h4>
-    </div>
-    @{
-        var someuserid = int.Parse(UserManager.GetUserId(User));
-    }
-        
-    @if (Model.Following.Any(u => u.FollowedId == someuserid))
-    {
-        <a href="#">Отписаться</a>
-    }
-    else
-    {
-        <form asp-action="Followed" asp-controller="Follow">
-            <input type="hidden" name="followedId" value="@Model.Id">
-            <button class="btn-primary">Подписаться</button>
-        </form>
-    }
-    
-</div>
-    @if (Model.Posts == null)
-    {
-        <h4 class="mb-1">0 Публикаций</h4>
-    }
-    else
-    {
-        <h4 class="mb-1">@Model.Posts.Count Публикаций</h4>
-    }
-    @if (Model.Followers == null)
-    {
-        <h4>0 Подписчиков</h4>
-    }
-    else
-    {
-        <p>Подписчики: <a asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id" class="text-decoration-none">@Model.Followers.Count</a></p>
-    }
-    @if (Model.Following == null)
-    {
-        <h4 class="mb-1">0 Подписки</h4>
-    }
-    else
-    {
-        <p>Подписки: <a asp-controller="Follow" asp-action="Followed" asp-route-Id="@Model.Id" class="text-decoration-none">@Model.Following.Count</a></p>
-    }
-@if (Model.Posts == null || Model.Posts.Count == 0)
-{
-    <h5 class="text-center text-muted">Нет постов</h5>
-}
-else
-{
-    <div class="row g-0"> 
-        @foreach (var con in Model.Posts)
-        {
-            <div class="col-4"> 
-                <div class="card border-0">
-                    <a asp-controller="User" asp-action="DetailInfo" asp-route-PostId="@con.Id">
-                        <img src="~/@con.Content"
-                             class="w-100"
-                             style="aspect-ratio: 1 / 1; object-fit: cover;"
-                             alt="post img"/>
-                    </a>
-                </div>
+    <div class="d-flex align-items-center mb-4" style="max-width: 800px; margin: auto;">
+        <img src="~/@Model.Avatar" 
+             class="rounded-circle me-4 border" 
+             style="width: 120px; height: 120px; object-fit: cover;" 
+             alt="avatar">
+
+        <div class="flex-grow-1">
+            <div class="d-flex align-items-center mb-3">
+                <h3 class="me-3 mb-0">@Model.UserName</h3>
+
+                @{
+                    var someuserid = int.Parse(UserManager.GetUserId(User));
+                }
+
+                @if (Model.Following.Any(u => u.FollowedId == someuserid))
+                {
+                    <form asp-action="" asp-controller="" method="post" class="d-inline">
+                        <input type="hidden" name="followedId" value="@Model.Id">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Отписаться</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Followed" asp-controller="Follow" method="post" class="d-inline">
+                        <input type="hidden" name="followedId" value="@Model.Id">
+                        <button type="submit" class="btn btn-primary btn-sm">Подписаться</button>
+                    </form>
+                }
             </div>
-        }
+
+            <div class="d-flex gap-4 mb-2">
+                <span><strong>@(Model?.Posts?.Count ?? 0)</strong> публикаций</span>
+                <span>
+                    <strong>
+                        <a asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id" 
+                           class="text-dark text-decoration-none">
+                           @(Model?.Followers?.Count ?? 0)
+                        </a>
+                    </strong> подписчиков
+                </span>
+                <span>
+                    <strong>
+                        <a asp-controller="Follow" asp-action="Followed" asp-route-Id="@Model.Id" 
+                           class="text-dark text-decoration-none">
+                           @(Model?.Following?.Count ?? 0)
+                        </a>
+                    </strong> подписки
+                </span>
+            </div>
+
+            <h6 class="fw-bold mb-0">@Model.Name</h6>
+            <p class="text-muted">@Model.Desc</p>
+        </div>
     </div>
-}
+
+    @if (Model.Posts == null || Model.Posts.Count == 0)
+    {
+        <h5 class="text-center text-muted">Нет постов</h5>
+    }
+    else
+    {
+        <div class="row g-1"> 
+            @foreach (var con in Model.Posts)
+            {
+                <div class="col-4"> 
+                    <div class="card border-0">
+                        <a asp-controller="User" asp-action="DetailInfo" asp-route-PostId="@con.Id">
+                            <img src="~/@con.Content"
+                                 class="w-100"
+                                 style="aspect-ratio: 1 / 1; object-fit: cover; cursor: pointer;"
+                                 alt="post img"/>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
