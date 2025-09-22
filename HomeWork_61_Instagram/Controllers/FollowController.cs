@@ -18,11 +18,12 @@ public class FollowController : Controller
     }
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Followed(int followedId)
+    public async Task<IActionResult> Followed(int? followedId)
     {
         var userid = int.Parse(_userManager.GetUserId(User));
         
         bool alreadyFollow = await _context.UserFollows.AnyAsync(f => f.FollowerId == userid && f.FollowedId == followedId);
+        ViewBag.IsFollowing = alreadyFollow;
         if (!alreadyFollow)
         {
             var follow = new UserFollow()
@@ -33,7 +34,23 @@ public class FollowController : Controller
             _context.UserFollows.Add(follow);
             await  _context.SaveChangesAsync();
         }
-        return RedirectToAction("Profile", "User" ,new {id = followedId});
+        var count = await _context.UserFollows.CountAsync(f => f.FollowedId == followedId);
+        return Json(new { isfollowing = true,followersCount = count });
+    }
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> UnFollowed(int? followedId)
+    {
+        var userid = int.Parse(_userManager.GetUserId(User));
+        
+        var follow = await _context.UserFollows.FirstOrDefaultAsync(f => f.FollowerId == userid && f.FollowedId == followedId);
+        if (follow != null)
+        {
+            _context.UserFollows.Remove(follow);
+            await _context.SaveChangesAsync();
+        }
+        var count = await _context.UserFollows.CountAsync(f => f.FollowedId == followedId);
+        return Json(new { isfollowing = false,followersCount = count });
     }
     [Authorize]
     // подписчики
@@ -55,5 +72,17 @@ public class FollowController : Controller
             .ToListAsync();
         return View(following);
     }
-        
+
+    public async Task<IActionResult> GetFollowersCount(int? id)
+    {
+        if (id.HasValue)
+        {
+            var followers = _context.Users.Include(p => p.Followers).FirstOrDefault(a => a.Id == id);
+            if (followers != null)
+            {
+                return PartialView("_FollowersCount", followers);
+            }
+        }
+        return NotFound();
+    }
 }

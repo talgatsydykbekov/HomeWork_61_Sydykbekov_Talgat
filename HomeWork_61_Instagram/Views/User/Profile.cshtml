@@ -4,6 +4,8 @@
 
 @{
     ViewBag.Title = "User profile";
+    var currentUserId = int.Parse(UserManager.GetUserId(User));
+    ViewBag.IsFollowing = Model.Followers.Any(f => f.FollowerId == currentUserId);
 }
 <div class="container mt-4">
 
@@ -20,21 +22,10 @@
                 @{
                     var someuserid = int.Parse(UserManager.GetUserId(User));
                 }
-
-                @if (Model.Following.Any(u => u.FollowedId == someuserid))
-                {
-                    <form asp-action="" asp-controller="" method="post" class="d-inline">
-                        <input type="hidden" name="followedId" value="@Model.Id">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Отписаться</button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-action="Followed" asp-controller="Follow" method="post" class="d-inline">
-                        <input type="hidden" name="followedId" value="@Model.Id">
-                        <button type="submit" class="btn btn-primary btn-sm">Подписаться</button>
-                    </form>
-                }
+                
+                <button id="follow-button" class="btn @(ViewBag.IsFollowing ? "btn-outline-danger btn-sm" : "btn-primary btn-sm")" data-followedid="@Model.Id">
+                    @(ViewBag.IsFollowing ? "Отписаться" : "Подписаться")
+                </button>
             </div>
 
             <div class="d-flex gap-4 mb-2">
@@ -43,7 +34,7 @@
                     <strong>
                         <a asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id" 
                            class="text-dark text-decoration-none">
-                           @(Model?.Followers?.Count ?? 0)
+                            <p id="followerscount">@(Model?.Followers?.Count ?? 0)</p>
                         </a>
                     </strong> подписчиков
                 </span>
@@ -51,7 +42,7 @@
                     <strong>
                         <a asp-controller="Follow" asp-action="Followed" asp-route-Id="@Model.Id" 
                            class="text-dark text-decoration-none">
-                           @(Model?.Following?.Count ?? 0)
+                            @(Model?.Following?.Count ?? 0)
                         </a>
                     </strong> подписки
                 </span>
@@ -85,3 +76,41 @@
         </div>
     }
 </div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function (){
+            $('#follow-button').click(function (){
+                let button = $(this);
+                let followedId = button.data('followedid');
+                let actionsUrl = "";
+                
+                if (button.text().trim() === "Подписаться"){
+                    actionsUrl = "@Url.Action("Followed","Follow")"
+                }else{
+                    actionsUrl = "@Url.Action("UnFollowed","Follow")"
+                }
+                
+                $.ajax({
+                    url: actionsUrl,
+                    type: "POST",
+                    data: {followedId: followedId},
+                    success: function (){
+                        $('#followerscount').load('@Url.Action("GetFollowersCount", "Follow")' + '?id=' + @Model.Id)
+
+
+                        if (button.text().trim() === "Подписаться"){
+                            button.text("Отписаться")
+                            button.removeClass("btn-primary").addClass("btn-outline-danger")
+                        }else{
+                            button.text("Подписаться");
+                            button.removeClass("btn-outline-danger").addClass("btn-primary")
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+}

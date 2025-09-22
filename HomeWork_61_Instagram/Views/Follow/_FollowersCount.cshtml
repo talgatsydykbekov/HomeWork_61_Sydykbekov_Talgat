@@ -1,0 +1,7 @@
+﻿@model MyUser
+
+@if (Model != null)
+{
+   @(Model?.Followers.Count ?? 0);
+}
+
