@@ -28,8 +28,10 @@ public class HomeController : Controller
         var someuser = _userManager.Users.Include(u => u.Following).FirstOrDefault(u => u.Id == int.Parse(user));
         var followingIds = someuser.Following.Select(f => f.FollowedId).ToList();
         
-        var  posts = _context.Posts.Include(u => u.User)
+        var  posts = _context.Posts.Include(u => u.User).Include(p => p.Reactions)
             .Where(u => followingIds.Contains(u.UserId));
+        
+
         return View(posts.ToList());
     }
 

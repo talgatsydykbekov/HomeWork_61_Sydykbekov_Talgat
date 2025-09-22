@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HomeWork_61_Instagram.Controllers;
@@ -25,35 +26,44 @@ public class ReactionController : Controller
         return View();
     }
 
+    
+    
     [HttpPost]
     [Authorize]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddLike(int PostId)
     {
-        var post = _context.Posts.FirstOrDefault(p => p.Id == PostId);
-        if (post == null)
-            return NotFound();
-        var userid = int.Parse(_userManager.GetUserId(User));
-        if (userid == null)
-            return NotFound();
-        var reactions = _context.Reactions.FirstOrDefault(r => r.UserId == userid && r.PostId == PostId);
-        if (reactions != null)
+        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == PostId);
+        if (post == null) return NotFound();
+
+        var userId = int.Parse(_userManager.GetUserId(User));
+
+        var reaction = await _context.Reactions
+            .FirstOrDefaultAsync(r => r.UserId == userId && r.PostId == PostId);
+
+        if (reaction != null)
         {
-            TempData["ErrorMessage"] = "Вы уже лайкали этот пост";
-            return RedirectToAction("Index", "Home");
+            _context.Reactions.Remove(reaction);
+            await _context.SaveChangesAsync();
+
+            var likesCount = await _context.Reactions.CountAsync(r => r.PostId == PostId);
+            return Json(new { isLiked = false, likesCount });
         }
         else
         {
-            var reaction = new Reactions()
+            var newReaction = new Reactions
             {
                 PostId = PostId,
-                UserId = userid
+                UserId = userId
             };
-            TempData["SuccessMessage"] = "";
-            _context.Reactions.Add(reaction);
+            _context.Reactions.Add(newReaction);
             await _context.SaveChangesAsync();
+
+            var likesCount = await _context.Reactions.CountAsync(r => r.PostId == PostId);
+            return Json(new { isLiked = true, likesCount });
         }
-        
-        return RedirectToAction("Index" , "Home",new { id = PostId });
     }
+
+
+    
+
 }

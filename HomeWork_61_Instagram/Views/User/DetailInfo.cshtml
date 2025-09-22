@@ -1,7 +1,11 @@
-﻿@model Post
+﻿@using Microsoft.AspNetCore.Identity
+@model Post
+@inject UserManager<MyUser> UserManager
 
 @{
     ViewBag.Title = "Detail";
+    var currentUserId = int.Parse(UserManager.GetUserId(User));
+    
 }
 
 @if (Model == null)
@@ -45,12 +49,20 @@ else
 
                     <div class="card-body pb-2">
                         <div class="d-flex align-items-center mb-2">
-                            <form asp-action="AddLike" asp-controller="Reaction" method="post">
-                                <input type="hidden" name="PostId" value="@Model.Id"/>
-                                <button type="submit" class="btn p-0 me-3 like-btn">
-                                    <i class="bi bi-heart fs-4"></i>
-                                </button>
-                                <button class="btn p-0 view-comments-btn" asp-controller="Comment" asp-action="Index">
+                            
+                            <button id="like-button-@Model.Id"
+                                    data-postid="@Model.Id"
+                                    class="btn p-0 like-btn">
+                                <i class="bi @(ViewBag.IsLiked ? "bi-heart-fill text-danger" : "bi-heart") fs-4"></i>
+                            </button>
+
+                            <span id="likes-count-@Model.Id">
+                            @(Model.Reactions?.Count ?? 0)
+                            </span>
+
+
+
+                            <button class="btn p-0 view-comments-btn" asp-controller="Comment" asp-action="Index">
                                     <input type="hidden" name="PostId" value="@Model.Id"/>
                                     <i class="bi bi-chat fs-4"></i>
                                 </button>
@@ -62,7 +74,6 @@ else
                                 {
                                     <h5 class="text-danger">@TempData["SuccessMessage"]</h5>
                                 }
-                            </form>
 
 
                         </div>
@@ -109,4 +120,37 @@ else
         }
         
     }
+}
+
+@section Scripts{
+    <script>
+        $(document).ready(function (){
+            $('.like-btn').click(function (e){
+                e.preventDefault();
+                
+                let button = $(this);
+                let postId = button.data("postid");
+
+                $.ajax({
+                    url: '@Url.Action("AddLike", "Reaction")',
+                    type: "POST",
+                    data: { PostId: postId },
+                    success: function (response) {
+                        let icon = button.find("i");
+
+                        if (response.isLiked) {
+                            icon.removeClass("bi-heart").addClass("bi-heart-fill text-danger");
+                        } else {
+                            icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart");
+                        }
+
+                        $("#likes-count-" + postId).text(response.likescount);
+                    },
+                    error: function () {
+                        alert("Ошибка при отправке лайка!");
+                    }
+                });
+            })
+        })
+    </script>
 }

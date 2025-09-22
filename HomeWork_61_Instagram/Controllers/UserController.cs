@@ -63,12 +63,23 @@ public class UserController : Controller
         if (PostId == null)
             return NotFound();
         var post = _context.Posts
+            .Include(p => p.Reactions)
             .Include(u => u.User)
             .Include(u => u.Comments)
             .ThenInclude(c => c.User)
             .FirstOrDefault(p => p.Id == PostId);
         if (post == null)
             return NotFound();
+        var currentUserId = int.Parse(_userManager.GetUserId(User));
+
+        if (post != null && post.Reactions != null)
+        {
+            ViewBag.IsLiked = post.Reactions.Any(r => r.UserId == currentUserId);
+        }
+        else
+        {
+            ViewBag.IsLiked = false;
+        }
         return View(post);
     }
 }

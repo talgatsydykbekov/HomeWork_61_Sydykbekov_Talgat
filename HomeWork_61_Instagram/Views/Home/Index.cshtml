@@ -45,8 +45,16 @@ else
 
                         <div class="card-body pb-2">
                             <div class="d-flex align-items-center mb-2">
-                                <form asp-action="AddLike" asp-controller="Reaction" method="post">
-                                    <input type="hidden" name="PostId" value="@post.Id"/>
+                                <button id="like-button-@post.Id"
+                                        data-postid="@post.Id"
+                                        class="btn p-0 like-btn">
+                                    <i class="bi @(ViewBag.IsLiked ? "bi-heart-fill text-danger" : "bi-heart") fs-4"></i>
+                                </button>
+
+                                <span id="likes-count-@post.Id">
+                            @(post.Reactions?.Count ?? 0)
+                            </span>
+                                <input type="hidden" name="PostId" value="@post.Id"/>
                                     <button type="submit" class="btn p-0 me-3 like-btn">
                                         <i class="bi bi-heart fs-4"></i>
                                     </button>
@@ -62,7 +70,7 @@ else
                                     {
                                         <h5 class="text-danger">@TempData["SuccessMessage"]</h5>
                                     }
-                                </form>
+                                
 
                                 
                             </div>
@@ -82,4 +90,38 @@ else
             }
         }
     </div>
+}
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function (){
+            $('.like-btn').click(function (e){
+                e.preventDefault();
+                
+                let button = $(this);
+                let postId = button.data("postid");
+
+                $.ajax({
+                    url: '@Url.Action("AddLike", "Reaction")',
+                    type: "POST",
+                    data: { PostId: postId },
+                    success: function (response) {
+                        let icon = button.find("i");
+
+                        if (response.isLiked) {
+                            icon.removeClass("bi-heart").addClass("bi-heart-fill text-danger");
+                        } else {
+                            icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart");
+                        }
+
+                        $("#likes-count-" + postId).text(response.likescount);
+                    },
+                    error: function () {
+                        alert("Ошибка при отправке лайка!");
+                    }
+                });
+            })
+        })
+    </script>
 }
