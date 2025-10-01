@@ -1,7 +1,9 @@
+using System.Globalization;
 using HomeWork_61_Instagram.Models;
 using HomeWork_61_Instagram.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
 public class Program
@@ -10,17 +12,18 @@ public class Program
     {
         
         var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews().AddViewLocalization();
         string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        builder.Services.AddDbContext<MyUserContext>(options => options.UseNpgsql(connectionString)).
+        builder.Services.AddDbContext<MyUserContext>(options => options.UseSqlite(connectionString)).
             AddIdentity<MyUser, IdentityRole<int>>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
                 
-            }).
+            }). 
             AddEntityFrameworkStores<MyUserContext>();
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
         {
@@ -53,6 +56,17 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        var supportedCultures = new[]
+        {
+            new CultureInfo("en"),
+            new CultureInfo("ru"),
+        };
+        app.UseRequestLocalization(new RequestLocalizationOptions()
+        {
+            DefaultRequestCulture = new RequestCulture("en"),
+            SupportedCultures = supportedCultures,
+            SupportedUICultures = supportedCultures
+        });
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
