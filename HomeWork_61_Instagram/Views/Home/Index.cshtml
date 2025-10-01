@@ -5,7 +5,7 @@
 }
 @if (Model == null || Model.Count == 0)
 {
-    <h5 class="text-center text-muted">Нет постов</h5>
+    <h5 class="text-center text-muted">@localizer["AnyPosts"]</h5>
 }
 else
 {
@@ -14,7 +14,7 @@ else
         {
             @if (post == null)
             {
-                <h1>Нет постов</h1>
+                <h1>@localizer["AnyPosts"]</h1>
             }
             else
             {
@@ -81,7 +81,7 @@ else
 
                         <div class="card-footer bg-white border-0">
                             <form asp-action="AddComment" asp-controller="Comment" asp-route-PostId="@post.Id" method="post" class="d-flex">
-                                <input type="text" name="commentText" class="form-control me-2" placeholder="Добавьте комментарий..."/>
+                                <input type="text" name="commentText" class="form-control me-2" placeholder="@localizer["AddComment"]"/>
                                 <button type="submit" class="btn btn-primary bi bi-send fs-4"></button>
                             </form>
                         </div>
