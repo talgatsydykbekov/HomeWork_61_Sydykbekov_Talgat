@@ -6,12 +6,12 @@
 
 @if (Model == null)
 {
-    <h1>НЕт данных</h1>
+    <h1>@localizer["AnyFollowers"]</h1>
 }
 else
 {
 
-    <h2>Подписчики</h2>
+    <h2>@localizer["Followers"]</h2>
     <ul>
         @foreach (var f in Model)
         {
