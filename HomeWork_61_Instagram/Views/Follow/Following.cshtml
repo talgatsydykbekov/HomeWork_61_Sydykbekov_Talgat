@@ -1,16 +1,16 @@
 ﻿@model List<UserFollow>
 
 @{
-    ViewBag.Title = "Подписчики";
+    ViewBag.Title = "Подписки";
 }
 @if (Model == null)
 {
-    <h1>НЕт данных</h1>
+    <h1>@localizer["AnyFollowing"]</h1>
 }
 else
 {
 
-    <h2>Подписки</h2>
+    <h2>@localizer["Following"]</h2>
     <ul>
         @foreach (var f in Model)
         {

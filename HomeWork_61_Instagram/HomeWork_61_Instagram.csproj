@@ -40,6 +40,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Followers.en.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Follow\Following.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Following.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Follow\Following.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Following.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -62,6 +70,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>Followers.en.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Follow\Following.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Following.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Follow\Following.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Following.en.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 
