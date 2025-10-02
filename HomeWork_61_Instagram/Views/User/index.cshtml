@@ -15,19 +15,19 @@
             <div class="d-flex align-items-center mb-3">
                 <h3 class="me-3 mb-0">@Model.UserName</h3>
                 <a class="btn btn-outline-success btn-sm" asp-action="Create" asp-controller="Post">
-                    + Добавить пост
+                    @localizer["AddPost"]
                 </a>
             </div>
 
             <div class="d-flex gap-4 mb-2">
-                <span><strong>@(Model?.Posts?.Count ?? 0)</strong> публикаций</span>
+                <span><strong>@(Model?.Posts?.Count ?? 0)</strong>@localizer["NumberPosts"]</span>
                 <span>
                     <strong>
                         <a class="text-dark text-decoration-none"
                            asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id">
                            @(Model?.Followers?.Count ?? 0)
                         </a>
-                    </strong> подписчиков
+                    </strong> @localizer["CountFollow"]
                 </span>
                 <span>
                     <strong>
@@ -35,7 +35,7 @@
                            asp-controller="Follow" asp-action="Following" asp-route-Id="@Model.Id">
                            @(Model?.Following?.Count ?? 0)
                         </a>
-                    </strong> подписки
+                    </strong>@localizer["CountFollowing"]
                 </span>
             </div>
 
@@ -47,7 +47,7 @@
     
     @if (Model.Posts == null || Model.Posts.Count == 0)
     {
-        <h5 class="text-center text-muted">Нет постов</h5>
+        <h5 class="text-center text-muted">@localizer["AnyPosts"]</h5>
     }
     else
     {

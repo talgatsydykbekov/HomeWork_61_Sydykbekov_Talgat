@@ -10,24 +10,24 @@
         <div class="col-md-5">
             <div class="card shadow-lg rounded-3">
                 <div class="card-header bg-success text-white text-center">
-                    <h4>Новый пост</h4>
+                    <h4>@localizer["CreatePost"]</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data" asp-controller="Post" asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         
                         <div class="mb-3">
-                            <label for="file">Фото или видео</label>
+                            <label for="file">@localizer["Content"]</label>
                             <input type="file" name="file" class="form-control">
                             
                         </div>
                         <div class="mb-3">
-                            <label asp-for="Desc" class="form-label">Описание</label>
+                            <label asp-for="Desc" class="form-label">@localizer["Desc"]</label>
                             <input asp-for="Desc" class="form-control" />
                             <span asp-validation-for="Desc" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100">Добавить</button>
+                        <button type="submit" class="btn btn-success w-100">@localizer["AddPost"]</button>
                     </form>
                 </div>
             </div>

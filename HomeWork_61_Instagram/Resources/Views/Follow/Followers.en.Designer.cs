@@ -60,7 +60,7 @@ namespace HomeWork_61_Instagram.Resources.Views.Follow {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to o followers.
+        ///   Looks up a localized string similar to No followers.
         /// </summary>
         internal static string AnyFollowers {
             get {

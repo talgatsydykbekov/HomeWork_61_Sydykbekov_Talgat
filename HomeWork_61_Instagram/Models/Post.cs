@@ -7,7 +7,7 @@ public class Post
     public int Id { get; set; }
     
     public DateTime Ceated_Datetime { get; set; }
-    [Required(ErrorMessage = "Выберите файл")]
+    [Required(ErrorMessage = "")]
     public string Content { get; set; }
     public string? Desc { get; set; }
     public int UserId { get; set; }

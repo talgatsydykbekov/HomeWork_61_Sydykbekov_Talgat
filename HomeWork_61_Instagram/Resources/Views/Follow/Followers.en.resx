@@ -19,7 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="AnyFollowers" xml:space="preserve">
-        <value>o followers</value>
+        <value>No followers</value>
     </data>
     <data name="Followers" xml:space="preserve">
         <value>Followers</value>
