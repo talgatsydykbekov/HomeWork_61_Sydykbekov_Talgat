@@ -4,6 +4,7 @@ using HomeWork_61_Instagram.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 public class Program
@@ -15,7 +16,19 @@ public class Program
         builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // Add services to the container.
-        builder.Services.AddControllersWithViews().AddViewLocalization();
+        builder.Services.AddControllersWithViews(options =>
+        {
+            options.CacheProfiles.Add("Caching", new CacheProfile()
+                {
+                    Duration = 100,
+                    Location = ResponseCacheLocation.Any
+                });
+            options.CacheProfiles.Add("NoCache", new CacheProfile()
+            {
+                Location = ResponseCacheLocation.None,
+                NoStore = true
+            });
+        }).AddViewLocalization();
         string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddDbContext<MyUserContext>(options => options.UseSqlite(connectionString)).
             AddIdentity<MyUser, IdentityRole<int>>(options =>
@@ -29,6 +42,7 @@ public class Program
         {
             options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
         });
+        builder.Services.AddMemoryCache();
         var app = builder.Build();
         using (var scope = app.Services.CreateScope())
         {
