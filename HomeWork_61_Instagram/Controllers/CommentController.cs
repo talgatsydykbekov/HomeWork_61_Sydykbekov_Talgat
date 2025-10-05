@@ -17,6 +17,7 @@ public class CommentController : Controller
         _context = context;
     }
     [Authorize]
+    [ResponseCache(CacheProfileName = "Caching")]
     public IActionResult Index(int PostId)
     {
         var comments = _context.Comments.Include(u => u.User).Where(u => u.PostId == PostId);
@@ -29,6 +30,7 @@ public class CommentController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [ResponseCache(CacheProfileName = "Caching")]
     public IActionResult AddComment(int PostId, string commentText)
     {
         var post = _context.Posts.FirstOrDefault(p => p.Id == PostId);

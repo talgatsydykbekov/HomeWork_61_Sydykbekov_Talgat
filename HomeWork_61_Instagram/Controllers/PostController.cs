@@ -33,6 +33,7 @@ public class PostController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [ResponseCache(CacheProfileName = "Caching")]
     public async Task<IActionResult> Create(PostViewModel post, IFormFile file)
     {
         if (file != null && file.Length > 0)

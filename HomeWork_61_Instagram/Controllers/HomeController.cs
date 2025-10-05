@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HomeWork_61_Instagram.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,8 @@ public class HomeController : Controller
         _context = context;
         _logger = logger;
     }
-
+    [ResponseCache(CacheProfileName = "Caching")]
+    [Authorize]
     public IActionResult Index()
     {
         var user = _userManager.GetUserId(User);

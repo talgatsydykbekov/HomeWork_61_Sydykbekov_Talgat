@@ -18,6 +18,7 @@ public class FollowController : Controller
     }
     [Authorize]
     [HttpPost]
+    [ResponseCache(CacheProfileName = "Caching")]
     public async Task<IActionResult> Followed(int? followedId)
     {
         var userid = int.Parse(_userManager.GetUserId(User));
@@ -39,6 +40,7 @@ public class FollowController : Controller
     }
     [Authorize]
     [HttpPost]
+    [ResponseCache(CacheProfileName = "Caching")]
     public async Task<IActionResult> UnFollowed(int? followedId)
     {
         var userid = int.Parse(_userManager.GetUserId(User));
@@ -53,6 +55,7 @@ public class FollowController : Controller
         return Json(new { isfollowing = false,followersCount = count });
     }
     [Authorize]
+    [ResponseCache(CacheProfileName = "Caching")]
     // подписчики
     public async Task<IActionResult> Followers(int Id)
     {
@@ -64,6 +67,7 @@ public class FollowController : Controller
     }
     //подписки
     [Authorize]
+    [ResponseCache(CacheProfileName = "Caching")]
     public async Task<IActionResult> Following(int Id)
     {
         var following = await _context.UserFollows

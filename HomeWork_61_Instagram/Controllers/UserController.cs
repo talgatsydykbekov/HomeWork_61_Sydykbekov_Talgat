@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeWork_61_Instagram.Controllers;
-
+[ResponseCache(CacheProfileName = "Caching")]
 public class UserController : Controller
 {
     private MyUserContext _context;
