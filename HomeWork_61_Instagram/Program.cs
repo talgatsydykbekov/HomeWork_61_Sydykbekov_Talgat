@@ -13,6 +13,7 @@ public class Program
     {
         
         var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
         builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // Add services to the container.
@@ -84,7 +85,7 @@ public class Program
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
-
+        app.UseResponseCompression();
         app.MapStaticAssets();
 
         app.MapControllerRoute(
