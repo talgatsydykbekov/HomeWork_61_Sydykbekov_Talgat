@@ -1,5 +1,7 @@
 ﻿@model HomeWork_61_Instagram.ViewModels.RegisterViewModel
-
+@using HomeWork_61_Instagram.ViewModels
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<RegisterViewModel> localizer
 @{
     ViewBag.Title = "Регистрация";
 }
@@ -9,54 +11,54 @@
         <div class="col-md-5">
             <div class="card shadow-lg rounded-3">
                 <div class="card-header bg-success text-white text-center">
-                    <h4>Регистрация нового пользователя</h4>
+                    <h4>@localizer["NewUserSign"]</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data" asp-controller="Account" asp-action="Register">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Nickname" class="form-label">Логин</label>
+                            <label asp-for="Nickname" class="form-label">@localizer["Login"]</label>
                             <input asp-for="Nickname" class="form-control" />
                             <span asp-validation-for="Nickname" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label">Адрес электронный почты</label>
+                            <label asp-for="Email" class="form-label">@localizer["Email"]</label>
                             <input asp-for="Email" class="form-control" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Name" class="form-label">Ваше имя</label>
+                            <label asp-for="Name" class="form-label">@localizer["NameUser"]</label>
                             <input asp-for="Name" class="form-control" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Desc" class="form-label">О себе</label>
+                            <label asp-for="Desc" class="form-label">@localizer["AboutMe"]</label>
                             <input asp-for="Desc" class="form-control" />
                             <span asp-validation-for="Desc" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Gender" class="form-label">Пол</label>
+                            <label asp-for="Gender" class="form-label">@localizer["Gender"]</label>
                             <select asp-for="Gender" class="form-select">
-                                <option value="0">-- Выберите пол --</option>
-                                <option value="1">Мужской</option>
-                                <option value="2">Женский</option>
+                                <option value="0">-- @localizer["ChooseGender"] --</option>
+                                <option value="1">@localizer["man"]</option>
+                                <option value="2">@localizer["Woman"]</option>
                             </select>
                             <span asp-validation-for="Gender" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="file">Аватар</label>
+                            <label for="file">@localizer["Avatar"]</label>
                             <input type="file" name="file" class="form-control">
                             
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label">Номер телефона</label>
+                            <label asp-for="PhoneNumber" class="form-label">@localizer["NumberTel"]</label>
                             <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="+996 (___) __-__-__" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
@@ -73,7 +75,7 @@
                             <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100">Зарегистрироваться</button>
+                        <button type="submit" class="btn btn-success w-100">@localizer["SignIn"]</button>
                     </form>
                 </div>
             </div>
