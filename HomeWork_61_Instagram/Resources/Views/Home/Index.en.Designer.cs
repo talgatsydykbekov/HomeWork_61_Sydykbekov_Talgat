@@ -69,7 +69,7 @@ namespace HomeWork_61_Instagram.Resources.Views.Home {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to o posts.
+        ///   Looks up a localized string similar to a posts.
         /// </summary>
         internal static string AnyPosts {
             get {

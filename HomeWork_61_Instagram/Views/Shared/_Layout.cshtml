@@ -19,13 +19,13 @@
 
             <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
                 <i class="fa-solid fa-house fa-xl me-2"></i>
-                <span class="fw-bold">Главная</span>
+                <span class="fw-bold">@localizer["NavMain"]</span>
             </a>
 
             <div class="mx-auto w-50">
                 <form asp-action="SearchUsers" asp-controller="User" method="post" class="d-flex">
-                    <input type="text" name="searchTitle" class="form-control me-2" placeholder="Поиск пользователей...">
-                    <button type="submit" class="btn btn-success">Поиск</button>
+                    <input type="text" name="searchTitle" class="form-control me-2" placeholder="@localizer["NavHintSearch"]">
+                    <button type="submit" class="btn btn-success">@localizer["NavSearch"]</button>
                 </form>
             </div>
 
@@ -38,13 +38,13 @@
                     </a>
 
                     <form method="post" asp-controller="Account" asp-action="LogOff" class="d-inline">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Выход</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">@localizer["NavExit"]</button>
                     </form>
                 }
                 else
                 {
-                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Вход</a>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-success btn-sm">Регистрация</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">@localizer["NavLogin"]</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-success btn-sm">@localizer["NavSignIn"]</a>
                 }
             </div>
         </div>
