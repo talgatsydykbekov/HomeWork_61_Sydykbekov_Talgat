@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Globalization 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -13,6 +14,13 @@
     <link rel="stylesheet" href="~/HomeWork_61_Instagram.styles.css" asp-append-version="true"/>
 </head>
 <body>
+@{
+    var isRussian =
+        CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+
+    var nextCulture = isRussian ? "en" : "ru";
+    var buttonText = isRussian ? "EN" : "RU";
+}
 <header>
     <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
         <div class="container-fluid">
@@ -20,6 +28,10 @@
             <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
                 <i class="fa-solid fa-house fa-xl me-2"></i>
                 <span class="fw-bold">@localizer["NavMain"]</span>
+            </a>
+            <a href="?culture=@nextCulture&ui-culture=@nextCulture"
+               style="display:inline-block; padding:6px 14px; border:1px solid #ddd; border-radius:8px; text-decoration:none; color:#333;">
+                @buttonText
             </a>
 
             <div class="mx-auto w-50">
