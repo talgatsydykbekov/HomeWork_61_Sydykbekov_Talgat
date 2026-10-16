@@ -24,4 +24,7 @@
     <data name="AddComment" xml:space="preserve">
         <value>Add a comment</value>
     </data>
+    <data name="ErrorSendComment" xml:space="preserve">
+        <value>Error sending like!</value>
+    </data>
 </root>

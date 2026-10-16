@@ -24,4 +24,7 @@
     <data name="AddComment" xml:space="preserve">
         <value>Добавить комментарий</value>
     </data>
+    <data name="ErrorSendComment" xml:space="preserve">
+        <value>Ошибка при отправке лайка!</value>
+    </data>
 </root>

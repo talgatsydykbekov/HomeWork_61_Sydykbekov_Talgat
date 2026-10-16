@@ -118,7 +118,7 @@ else
                         $("#likes-count-" + postId).text(response.likescount);
                     },
                     error: function () {
-                        alert("Ошибка при отправке лайка!");
+                        alert(@localizer["ErrorSendComment"]);
                     }
                 });
             })

@@ -76,5 +76,14 @@ namespace HomeWork_61_Instagram.Resources.Views.Home {
                 return ResourceManager.GetString("AnyPosts", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error sending like!.
+        /// </summary>
+        internal static string ErrorSendComment {
+            get {
+                return ResourceManager.GetString("ErrorSendComment", resourceCulture);
+            }
+        }
     }
 }
