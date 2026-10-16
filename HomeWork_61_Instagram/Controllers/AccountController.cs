@@ -81,10 +81,10 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            MyUser user = await _userManager.FindByEmailAsync(model.EmailOrLogin);
+            MyUser user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                user = await _userManager.FindByNameAsync(model.EmailOrLogin);
+                user = await _userManager.FindByNameAsync(model.Email);
             }
             if (user == null)
             {

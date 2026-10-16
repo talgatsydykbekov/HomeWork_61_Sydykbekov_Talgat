@@ -29,7 +29,7 @@ public class Program
                 Location = ResponseCacheLocation.None,
                 NoStore = true
             });
-        }).AddViewLocalization();
+        }).AddViewLocalization().AddDataAnnotationsLocalization();
         string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddDbContext<MyUserContext>(options => options.UseNpgsql(connectionString)).
             AddIdentity<MyUser, IdentityRole<int>>(options =>

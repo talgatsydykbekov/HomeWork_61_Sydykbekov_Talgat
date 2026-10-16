@@ -1,5 +1,5 @@
 ﻿@model HomeWork_61_Instagram.ViewModels.LoginViewModel
-
+@using System.Globalization
 @{
     ViewBag.Title = "Вход";
 }
@@ -9,7 +9,7 @@
         <div class="col-md-5">
             <div class="card shadow-lg rounded-3">
                 <div class="card-header bg-primary text-white text-center">
-                    <h4>Вход в приложение</h4>
+                    <h4>@localizer["LoginTitle"]</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" asp-controller="Account" asp-action="Login"
@@ -17,9 +17,9 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                         <div class="mb-3">
-                            <label asp-for="EmailOrLogin" class="form-label"></label>
-                            <input asp-for="EmailOrLogin" class="form-control" />
-                            <span asp-validation-for="EmailOrLogin" class="text-danger"></span>
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
@@ -33,7 +33,7 @@
                             <label asp-for="RememberMe" class="form-check-label"></label>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Войти</button>
+                        <button type="submit" class="btn btn-primary w-100">@localizer["LoginButton"]</button>
                     </form>
                 </div>
             </div>
