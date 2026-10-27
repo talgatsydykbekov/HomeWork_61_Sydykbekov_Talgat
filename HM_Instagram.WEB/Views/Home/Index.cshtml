@@ -1,4 +1,4 @@
-﻿@model List<Post> 
+@model List<HM_Instagram.WEB.ViewModels.GetPostViewModel> 
 
 @{
     ViewData["Title"] = "Лента";
@@ -48,7 +48,7 @@ else
                                 <button id="like-button-@post.Id"
                                         data-postid="@post.Id"
                                         class="btn p-0 like-btn">
-                                    <i class="bi @(ViewBag.IsLiked ? "bi-heart-fill text-danger" : "bi-heart") fs-4"></i>
+                                    <i class="bi @(ViewBag.IsLiked == true ? "bi-heart-fill text-danger" : "bi-heart") fs-4"></i>
                                 </button>
 
                                 <span id="likes-count-@post.Id">
@@ -58,7 +58,7 @@ else
                                     <button type="submit" class="btn p-0 me-3 like-btn">
                                         <i class="bi bi-heart fs-4"></i>
                                     </button>
-                                    <button class="btn p-0 view-comments-btn" asp-controller="Comment" asp-action="Index">
+                                    <button class="btn p-0 view-comments-btn" asp-route-PostId="@post.Id" asp-controller="Comment" asp-action="Index">
                                         <input type="hidden" name="PostId" value="@post.Id"/>
                                         <i class="bi bi-chat fs-4"></i>
                                     </button>
@@ -115,10 +115,15 @@ else
                             icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart");
                         }
 
-                        $("#likes-count-" + postId).text(response.likescount);
+                        $("#likes-count-" + postId).text(response.likesCount);
                     },
-                    error: function () {
-                        alert(@localizer["ErrorSendComment"]);
+                    error: function (xhr) {
+                        const message = @Html.Raw(
+                                            System.Text.Json.JsonSerializer.Serialize(
+                                                localizer["ErrorSendComment"].Value));
+
+                        console.error("Ошибка добавления лайка:", xhr.status, xhr.responseText);
+                        alert(message);
                     }
                 });
             })

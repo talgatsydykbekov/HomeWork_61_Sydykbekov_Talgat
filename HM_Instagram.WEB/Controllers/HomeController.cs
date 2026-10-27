@@ -1,40 +1,43 @@
 using System.Diagnostics;
-using HM_Instagram.WEB.Models;
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using HM_Instagram.BLL.Interfaces;
+using HM_Instagram.BLL.Models;
+using HM_Instagram.WEB.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HM_Instagram.WEB.Controllers;
 
 public class HomeController : Controller
 {
-    private MyUserContext _context;
-    private readonly UserManager<MyUser> _userManager;
-    private ILogger<HomeController> _logger;
-    public HomeController(UserManager<MyUser> userManager, MyUserContext context,ILogger<HomeController> logger)
+    private readonly IPostService _postService;
+
+    public HomeController(IPostService postService)
     {
-        _userManager = userManager;
-        _context = context;
-        _logger = logger;
+        _postService = postService;
     }
-    [ResponseCache(CacheProfileName = "Caching")]
+    [ResponseCache(CacheProfileName = "NoCache")]
     [Authorize]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var user = _userManager.GetUserId(User);
-        if (user == null)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(!int.TryParse(userId, out var currentUserId))
         {
             return RedirectToAction("Login", "Account");
         }
-        var someuser = _userManager.Users.Include(u => u.Following).FirstOrDefault(u => u.Id == int.Parse(user));
-        var followingIds = someuser.Following.Select(f => f.FollowedId).ToList();
-        
-        var  posts = _context.Posts.Include(u => u.User).Include(p => p.Reactions)
-            .Where(u => followingIds.Contains(u.UserId));
-        
 
-        return View(posts.ToList());
+        var posts = await _postService.GetFeedAsync(currentUserId);
+        var model = posts.Select(post => new GetPostViewModel
+        {
+            Content = post.Content,
+            Ceated_Datetime = post.Ceated_Datetime,
+            Comments = post.Comments,
+            Reactions = post.Reactions,
+            UserId = post.UserId,
+            User = post.User,
+            Id = post.Id,
+        }).ToList();
+        return View(model);
     }
 
     public IActionResult Privacy()

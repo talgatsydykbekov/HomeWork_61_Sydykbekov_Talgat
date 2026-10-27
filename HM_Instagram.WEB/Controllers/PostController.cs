@@ -1,76 +1,48 @@
-﻿using HM_Instagram.WEB.Models;
+using System.Security.Claims;
+using HM_Instagram.BLL.DTOs;
+using HM_Instagram.BLL.DTOs.Post;
+using HM_Instagram.BLL.Interfaces;
 using HM_Instagram.WEB.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HM_Instagram.WEB.Controllers;
 
 public class PostController : Controller
 {
-    private readonly IWebHostEnvironment _env;
-    private MyUserContext _context;
-    private readonly UserManager<MyUser> _userManager;
+    private readonly IPostService _postService;
 
-    public PostController(UserManager<MyUser> userManager, MyUserContext context, IWebHostEnvironment env)
+    public PostController(IPostService postService)
     {
-        _userManager = userManager;
-        _context = context;
-        _env = env;
-        
+        _postService = postService;
     }
 
-    // GET
-    public IActionResult Index()
-    {
-        return View();
-    }
+    public IActionResult Index() => View();
+
     [Authorize]
-    public IActionResult Create()
-    {
-        return View();
-    }
+    public IActionResult Create() => View();
+
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [ResponseCache(CacheProfileName = "Caching")]
-    public async Task<IActionResult> Create(PostViewModel post, IFormFile file)
+    public async Task<IActionResult> Create(PostViewModel post, IFormFile? file)
     {
-        if (file != null && file.Length > 0)
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
+
+        if (file == null || file.Length == 0)
+            ModelState.AddModelError(string.Empty, "Выберите изображение для публикации.");
+
+        if (!ModelState.IsValid)
+            return View(post);
+
+        await using var stream = file!.OpenReadStream();
+        await _postService.CreatePost(new CreatePostDto
         {
-            if (ModelState.IsValid)
-            {
-                string? relativePath = null;
-                string uploadedFileName = Path.Combine(_env.WebRootPath, "images/posts");
-                if (!Directory.Exists(uploadedFileName))
-                {
-                    Directory.CreateDirectory(uploadedFileName);
-                }
-
-                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-
-                string filesavePath = Path.Combine(uploadedFileName, fileName);
-                using (var stream = new FileStream(filesavePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                relativePath = $"images/posts/{fileName}";
-
-                var Post = new Post()
-                {
-                    Content = relativePath,
-                    UserId = int.Parse(_userManager.GetUserId(User)),
-                    Ceated_Datetime = DateTime.UtcNow,
-                    Desc    = post.Desc,
-                }; 
-                
-                await _context.Posts.AddAsync(Post);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "User");
-            }
-        }
-
-        return View(post);
+            UserId = userId,
+            Desc = post.Desc,
+            Image = new UploadFileDto { FileName = file.FileName, Content = stream }
+        });
+        return RedirectToAction("Index", "User");
     }
 }
