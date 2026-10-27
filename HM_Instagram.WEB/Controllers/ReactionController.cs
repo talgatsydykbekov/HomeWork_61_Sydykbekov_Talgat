@@ -1,69 +1,38 @@
-﻿using HM_Instagram.WEB.Models;
+using System.Security.Claims;
+using HM_Instagram.BLL.DTOs;
+using HM_Instagram.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HM_Instagram.WEB.Controllers;
 
 public class ReactionController : Controller
 {
-    private readonly IWebHostEnvironment _env;
-    private MyUserContext _context;
-    private readonly UserManager<MyUser> _userManager;
+    private readonly IReactionService _reactionService;
 
-    public ReactionController(UserManager<MyUser> userManager, MyUserContext context, IWebHostEnvironment env)
+    public ReactionController(IReactionService reactionService)
     {
-        _userManager = userManager;
-        _context = context;
-        _env = env;
-    }
-    // GET
-    public IActionResult Index()
-    {
-        return View();
+        _reactionService = reactionService;
     }
 
-    
-    
+    public IActionResult Index() => View();
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> AddLike(int PostId)
     {
-        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == PostId);
-        if (post == null) return NotFound();
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
 
-        var userId = int.Parse(_userManager.GetUserId(User));
-
-        var reaction = await _context.Reactions
-            .FirstOrDefaultAsync(r => r.UserId == userId && r.PostId == PostId);
-
-        if (reaction != null)
+        var result = await _reactionService.AddLikeAsync(new ReactionsDto
         {
-            _context.Reactions.Remove(reaction);
-            await _context.SaveChangesAsync();
+            UserId = userId,
+            PostId = PostId
+        });
 
-            var likesCount = await _context.Reactions.CountAsync(r => r.PostId == PostId);
-            return Json(new { isLiked = false, likesCount });
-        }
-        else
-        {
-            var newReaction = new Reactions
-            {
-                PostId = PostId,
-                UserId = userId
-            };
-            _context.Reactions.Add(newReaction);
-            await _context.SaveChangesAsync();
+        if (result == null)
+            return NotFound();
 
-            var likesCount = await _context.Reactions.CountAsync(r => r.PostId == PostId);
-            return Json(new { isLiked = true, likesCount });
-        }
+        return Json(result);
     }
-
-
-    
-
 }
