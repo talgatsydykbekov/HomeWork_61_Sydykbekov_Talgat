@@ -1,6 +1,10 @@
 using System.Globalization;
-using HM_Instagram.WEB.Models;
-using HM_Instagram.WEB.Services;
+using HM_Instagram.BLL.Interfaces;
+using HM_Instagram.BLL.Models;
+using HM_Instagram.BLL.Services;
+using HM_Instagram.DAL.Data;
+using HM_Instagram.DAL.Repositories;
+using HM_Instagram.DAL.Storage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -44,6 +48,20 @@ public class Program
             options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
         });
         builder.Services.AddMemoryCache();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<IPostRepository,PostRepository>();
+        builder.Services.AddScoped<IPostService,PostService>();
+        builder.Services.AddScoped<IFollowRepository,FollowRepository>();
+        builder.Services.AddScoped<IFollowService,FollowService>();
+        builder.Services.AddScoped<ICommentRepository,CommentRepository>();
+        builder.Services.AddScoped<ICommentService,ComentService>();
+        builder.Services.AddScoped<IReactionRepository,ReactionRepository>();
+        builder.Services.AddScoped<IReactionService,ReactionService>();
+        builder.Services.AddScoped<IUserRepository,UserRepository>();
+        builder.Services.AddScoped<IUserService,UserService>();
+        builder.Services.AddScoped<IAccountService,AccountService>();
+        builder.Services.AddScoped<IImageStorage,LocalImageStorage>();
+
         var app = builder.Build();
         using (var scope = app.Services.CreateScope())
         {
