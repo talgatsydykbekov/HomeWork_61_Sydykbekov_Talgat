@@ -1,48 +1,45 @@
-﻿@using Microsoft.AspNetCore.Identity
-@model MyUser
-@inject UserManager<MyUser> UserManager
+@model HM_Instagram.BLL.DTOs.User.UserProfileDto
+
 
 @{
     ViewBag.Title = "User profile";
-    var currentUserId = int.Parse(UserManager.GetUserId(User));
-    ViewBag.IsFollowing = Model.Followers.Any(f => f.FollowerId == currentUserId);
+
+    var isFollowing = Model.IsFollowing;
 }
 <div class="container mt-4">
 
     <div class="d-flex align-items-center mb-4" style="max-width: 800px; margin: auto;">
-        <img src="~/@Model.Avatar" 
-             class="rounded-circle me-4 border" 
-             style="width: 120px; height: 120px; object-fit: cover;" 
+        <img src="~/@Model.Avatar"
+             class="rounded-circle me-4 border"
+             style="width: 120px; height: 120px; object-fit: cover;"
              alt="avatar">
 
         <div class="flex-grow-1">
             <div class="d-flex align-items-center mb-3">
                 <h3 class="me-3 mb-0">@Model.UserName</h3>
-
-                @{
-                    var someuserid = int.Parse(UserManager.GetUserId(User));
-                }
-                
-                <button id="follow-button" class="btn @(ViewBag.IsFollowing ? "btn-outline-danger btn-sm" : "btn-primary btn-sm")" data-followedid="@Model.Id">
-                    @(ViewBag.IsFollowing ? "Отписаться" : "Подписаться")
+                <button
+                    id="follow-button"
+                    class="btn @(isFollowing ? "btn-outline-danger btn-sm" : "btn-primary btn-sm")"
+                    data-followedid="@Model.Id">
+                    @(isFollowing ? "Отписаться" : "Подписаться")
                 </button>
             </div>
 
             <div class="d-flex gap-4 mb-2">
-                <span><strong>@(Model?.Posts?.Count ?? 0)</strong> публикаций</span>
+                <span><strong>@Model.Posts.Count</strong> публикаций</span>
                 <span>
                     <strong>
-                        <a asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id" 
+                        <a asp-controller="Follow" asp-action="Followers" asp-route-Id="@Model.Id"
                            class="text-dark text-decoration-none">
-                            <p id="followerscount">@(Model?.Followers?.Count ?? 0)</p>
+                            <p id="followerscount">@Model.FollowersCount</p>
                         </a>
                     </strong> подписчиков
                 </span>
                 <span>
                     <strong>
-                        <a asp-controller="Follow" asp-action="Followed" asp-route-Id="@Model.Id" 
+                        <a asp-controller="Follow" asp-action="Following" asp-route-Id="@Model.Id"
                            class="text-dark text-decoration-none">
-                            @(Model?.Following?.Count ?? 0)
+                            @Model.FollowingCount
                         </a>
                     </strong> подписки
                 </span>
@@ -53,16 +50,16 @@
         </div>
     </div>
 
-    @if (Model.Posts == null || Model.Posts.Count == 0)
+    @if (Model.Posts.Count == 0)
     {
         <h5 class="text-center text-muted">Нет постов</h5>
     }
     else
     {
-        <div class="row g-1"> 
+        <div class="row g-1">
             @foreach (var con in Model.Posts)
             {
-                <div class="col-4"> 
+                <div class="col-4">
                     <div class="card border-0">
                         <a asp-controller="User" asp-action="DetailInfo" asp-route-PostId="@con.Id">
                             <img src="~/@con.Content"
@@ -86,13 +83,13 @@
                 let button = $(this);
                 let followedId = button.data('followedid');
                 let actionsUrl = "";
-                
+
                 if (button.text().trim() === "Подписаться"){
                     actionsUrl = "@Url.Action("Followed","Follow")"
                 }else{
                     actionsUrl = "@Url.Action("UnFollowed","Follow")"
                 }
-                
+
                 $.ajax({
                     url: actionsUrl,
                     type: "POST",

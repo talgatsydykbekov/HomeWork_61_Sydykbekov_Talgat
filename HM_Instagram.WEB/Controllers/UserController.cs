@@ -1,85 +1,65 @@
-﻿using HM_Instagram.WEB.Models;
+using System.Security.Claims;
+using HM_Instagram.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HM_Instagram.WEB.Controllers;
-[ResponseCache(CacheProfileName = "Caching")]
+
+[ResponseCache(CacheProfileName = "NoCache")]
 public class UserController : Controller
 {
-    private MyUserContext _context;
-    private readonly UserManager<MyUser> _userManager;
+    private readonly IUserService _userService;
 
-    public UserController(UserManager<MyUser> userManager, MyUserContext context)
+    public UserController(IUserService userService)
     {
-        _userManager = userManager;
-        _context = context;
+        _userService = userService;
     }
+
     [Authorize]
-    // GET
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var userid = int.Parse(_userManager.GetUserId(User)); 
-        var users = _userManager.Users.Include(p => p.Posts)
-            .Include(p => p.Followers)
-            .Include(p => p.Following)
-            .FirstOrDefault(u => u.Id == userid);
-        return View(users);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
+
+        var user = await _userService.GetProfileAsync(userId, userId);
+        if (user == null)
+            return NotFound();
+
+        return View(user);
     }
+
     [Authorize]
     public async Task<IActionResult> SearchUsers(string? searchTitle)
     {
-        var users = _userManager.Users.Include(p => p.Posts)
-            .Include(p => p.Followers)
-            .Include(p => p.Following).AsQueryable();
-        
-        if (!string.IsNullOrEmpty(searchTitle))
-        { 
-            users = users.Where(u => u.UserName.ToLower().Contains(searchTitle.ToLower())
-            || u.Email.ToLower().Contains(searchTitle.ToLower())
-            || u.Name.ToLower().Contains(searchTitle.ToLower())
-            || u.Desc.ToLower().Contains(searchTitle.ToLower()));
-        }
-         return View(await users.ToListAsync());
-    }
-    [Authorize]
-    public IActionResult Profile(int id)
-    {
-        if (!(id == int.Parse(_userManager.GetUserId(User))))
-        {
-            var user = _userManager.Users
-                .Include(p => p.Posts)
-                .Include(p => p.Followers)
-                .Include(p => p.Following)
-                .FirstOrDefault(u => u.Id == id);
-            return View(user);
-        }
-        return RedirectToAction("Index");
+        return View(await _userService.SearchAsync(searchTitle));
     }
 
-    public IActionResult DetailInfo(int PostId)
+    [Authorize]
+    public async Task<IActionResult> Profile(int id)
     {
-        if (PostId == null)
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
+
+        if (id == userId)
+            return RedirectToAction(nameof(Index));
+
+        var user = await _userService.GetProfileAsync(id, userId);
+        if (user == null)
             return NotFound();
-        var post = _context.Posts
-            .Include(p => p.Reactions)
-            .Include(u => u.User)
-            .Include(u => u.Comments)
-            .ThenInclude(c => c.User)
-            .FirstOrDefault(p => p.Id == PostId);
+
+        return View(user);
+    }
+
+    public async Task<IActionResult> DetailInfo(int PostId)
+    {
+        int? currentUserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId)
+            ? userId
+            : null;
+
+        var post = await _userService.GetPostDetailsAsync(PostId, currentUserId);
         if (post == null)
             return NotFound();
-        var currentUserId = int.Parse(_userManager.GetUserId(User));
 
-        if (post != null && post.Reactions != null)
-        {
-            ViewBag.IsLiked = post.Reactions.Any(r => r.UserId == currentUserId);
-        }
-        else
-        {
-            ViewBag.IsLiked = false;
-        }
         return View(post);
     }
 }

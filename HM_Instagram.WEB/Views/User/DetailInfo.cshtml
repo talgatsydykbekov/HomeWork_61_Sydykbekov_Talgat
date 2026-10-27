@@ -1,11 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity
-@model Post
-@inject UserManager<MyUser> UserManager
+@model HM_Instagram.BLL.DTOs.User.PostDetailsDto
+
 
 @{
     ViewBag.Title = "Detail";
-    var currentUserId = int.Parse(UserManager.GetUserId(User));
-    
+
 }
 
 @if (Model == null)
@@ -15,13 +13,8 @@
 else
 {
     <div class="row justify-content-center">
-        
-        @if (Model == null)
-        {
-            <h1>@localizer["AnyPosts"]</h1>
-        }
-        else
-        {
+
+
             <div class="col-6 mb-4">
                 <div class="card shadow-sm rounded-3 border-0">
 
@@ -49,15 +42,15 @@ else
 
                     <div class="card-body pb-2">
                         <div class="d-flex align-items-center mb-2">
-                            
+
                             <button id="like-button-@Model.Id"
                                     data-postid="@Model.Id"
                                     class="btn p-0 like-btn">
-                                <i class="bi @(ViewBag.IsLiked ? "bi-heart-fill text-danger" : "bi-heart") fs-4"></i>
+                                <i class="bi @(Model.IsLiked ? "bi-heart-fill text-danger" : "bi-heart") fs-4"></i>
                             </button>
 
                             <span id="likes-count-@Model.Id">
-                            @(Model.Reactions?.Count ?? 0)
+                            @Model.LikesCount
                             </span>
 
 
@@ -80,7 +73,7 @@ else
                     </div>
                     <div>
                         <p>@Model.Desc</p>
-                        <p>@Model.Ceated_Datetime</p>
+                        <p>@Model.Created</p>
                     </div>
 
                     <div class="card-footer bg-white border-0">
@@ -91,8 +84,6 @@ else
                     </div>
                 </div>
             </div>
-        }
-        }
     </div>
     @foreach (var comment in Model.Comments)
     {
@@ -103,22 +94,22 @@ else
         else
         {
             <div class="d-flex align-items-start mb-2">
-                <img src="~/@comment.User.Avatar"
+                <img src="~/@comment.Avatar"
                      alt="avatar"
                      class="rounded-circle me-2"
                      width="32" height="32"
                      style="object-fit: cover;" />
 
                 <div>
-                    <strong>@comment.User.UserName</strong>
-                    <span>@comment.Comment</span>
+                    <strong>@comment.UserName</strong>
+                    <span>@comment.Content</span>
                     <div class="text-muted small">
-                        @comment.Created_DateTime.ToString("dd.MM.yyyy HH:mm")
+                        @comment.Created.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
             </div>
         }
-        
+
     }
 }
 
@@ -127,7 +118,7 @@ else
         $(document).ready(function (){
             $('.like-btn').click(function (e){
                 e.preventDefault();
-                
+
                 let button = $(this);
                 let postId = button.data("postid");
 
@@ -144,7 +135,7 @@ else
                             icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart");
                         }
 
-                        $("#likes-count-" + postId).text(response.likescount);
+                        $("#likes-count-" + postId).text(response.likesCount);
                     },
                     error: function () {
                         alert("Ошибка при отправке лайка!");
