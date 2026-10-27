@@ -1,4 +1,4 @@
-﻿@model List<UserFollow>
+﻿@model List<HM_Instagram.BLL.DTOs.Follow.FollowDto>
 
 @{
     ViewBag.Title = "Подписки";
@@ -14,13 +14,10 @@ else
     <ul>
         @foreach (var f in Model)
         {
-            @if (f.Followed != null)
-            {
-                <li>
-                    <img src="~/@f.Followed.Avatar" width="40" height="40"/>
-                    @f.Followed.UserName
-                </li>
-            }
+            <li>
+                    <img src="~/@f.Avatar" width="40" height="40"/>
+                    @f.UserName
+            </li>
         }
     </ul>
 }

@@ -1,68 +1,58 @@
-﻿using HM_Instagram.WEB.Models;
+using System.Security.Claims;
+using HM_Instagram.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HM_Instagram.WEB.Controllers;
 
 public class FollowController : Controller
 {
-    private MyUserContext _context;
-    private readonly UserManager<MyUser> _userManager;
+    private readonly IFollowService _followService;
 
-    public FollowController(UserManager<MyUser> userManager, MyUserContext context)
+    public FollowController(IFollowService followService)
     {
-        _userManager = userManager;
-        _context = context;
+        _followService = followService;
     }
     [Authorize]
     [HttpPost]
-    [ResponseCache(CacheProfileName = "Caching")]
-    public async Task<IActionResult> Followed(int? followedId)
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> Followed(int followedId)
     {
-        var userid = int.Parse(_userManager.GetUserId(User));
-        
-        bool alreadyFollow = await _context.UserFollows.AnyAsync(f => f.FollowerId == userid && f.FollowedId == followedId);
-        ViewBag.IsFollowing = alreadyFollow;
-        if (!alreadyFollow)
+        var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userid, out var userId))
         {
-            var follow = new UserFollow()
-            {
-                FollowedId = followedId,
-                FollowerId = userid,
-            };
-            _context.UserFollows.Add(follow);
-            await  _context.SaveChangesAsync();
+            return Unauthorized();
         }
-        var count = await _context.UserFollows.CountAsync(f => f.FollowedId == followedId);
-        return Json(new { isfollowing = true,followersCount = count });
+        var result = await _followService.FollowAsync(userId,followedId);
+        return Json(new
+        {
+            isFollowing = result.IsFollowing,
+            followersCount = result.FollowersCount
+        });
     }
     [Authorize]
     [HttpPost]
-    [ResponseCache(CacheProfileName = "Caching")]
-    public async Task<IActionResult> UnFollowed(int? followedId)
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> UnFollowed(int followedId)
     {
-        var userid = int.Parse(_userManager.GetUserId(User));
-        
-        var follow = await _context.UserFollows.FirstOrDefaultAsync(f => f.FollowerId == userid && f.FollowedId == followedId);
-        if (follow != null)
+        var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(!int.TryParse(userid, out var userId))
         {
-            _context.UserFollows.Remove(follow);
-            await _context.SaveChangesAsync();
+            return Unauthorized();
         }
-        var count = await _context.UserFollows.CountAsync(f => f.FollowedId == followedId);
-        return Json(new { isfollowing = false,followersCount = count });
+        var result = await _followService.UnfollowAsync(userId, followedId);
+        return Json(new
+        {
+            isFollowing = result.IsFollowing,
+            followersCount = result.FollowersCount
+        });
     }
     [Authorize]
     [ResponseCache(CacheProfileName = "Caching")]
     // подписчики
-    public async Task<IActionResult> Followers(int Id)
+    public async Task<IActionResult> Followers(int id)
     {
-        var followers = await _context.UserFollows
-            .Where(f => f.FollowedId == Id)
-            .Include(f => f.Follower)
-            .ToListAsync();
+        var followers = await _followService.GetFollowersAsync(id);
         return View(followers);
     }
     //подписки
@@ -70,22 +60,17 @@ public class FollowController : Controller
     [ResponseCache(CacheProfileName = "Caching")]
     public async Task<IActionResult> Following(int Id)
     {
-        var following = await _context.UserFollows
-            .Where(f => f.FollowerId == Id)
-            .Include(f => f.Followed)
-            .ToListAsync();
+        var following = await _followService.GetFollowingAsync(Id);
+
         return View(following);
     }
-
-    public async Task<IActionResult> GetFollowersCount(int? id)
+    public async Task<IActionResult> GetFollowersCount(int id)
     {
-        if (id.HasValue)
+        if (id != null)
         {
-            var followers = _context.Users.Include(p => p.Followers).FirstOrDefault(a => a.Id == id);
-            if (followers != null)
-            {
-                return PartialView("_FollowersCount", followers);
-            }
+            var following = await _followService.GetFollowersAsync(id);
+
+            return View(following);
         }
         return NotFound();
     }
