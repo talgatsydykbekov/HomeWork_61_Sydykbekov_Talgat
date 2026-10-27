@@ -1,7 +1,7 @@
-﻿using HM_Instagram.WEB.Models;
+﻿using HM_Instagram.BLL.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace HM_Instagram.WEB.Services;
+namespace HM_Instagram.BLL.Services;
 
 public class AdminInitializer
 {

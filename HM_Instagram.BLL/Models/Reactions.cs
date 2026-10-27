@@ -1,4 +1,4 @@
-﻿namespace HM_Instagram.WEB.Models;
+﻿namespace HM_Instagram.BLL.Models;
 
 public class Reactions
 {

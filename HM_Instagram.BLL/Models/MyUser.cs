@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HM_Instagram.WEB.Enums;
+using HM_Instagram.BLL.Enums;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
-namespace HM_Instagram.WEB.Models;
+
+namespace HM_Instagram.BLL.Models;
 
 public class MyUser : IdentityUser<int>
 {

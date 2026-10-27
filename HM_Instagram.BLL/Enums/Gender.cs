@@ -1,4 +1,4 @@
-﻿namespace HM_Instagram.WEB.Enums;
+﻿namespace HM_Instagram.BLL.Enums;
 
 public enum Gender
 {

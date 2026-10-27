@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HM_Instagram.WEB.Enums;
+using HM_Instagram.BLL.Enums;
 
 namespace HM_Instagram.WEB.ViewModels;
 

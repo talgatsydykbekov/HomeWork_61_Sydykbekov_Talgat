@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using HM_Instagram.BLL.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace HM_Instagram.WEB.Models;
+namespace HM_Instagram.DAL.Data;
 
 public class MyUserContext : IdentityDbContext<MyUser, IdentityRole<int>, int>
 {
