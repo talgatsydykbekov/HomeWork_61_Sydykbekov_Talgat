@@ -1,113 +1,81 @@
-﻿
-using HM_Instagram.WEB.Models;
+using HM_Instagram.BLL.DTOs;
+using HM_Instagram.BLL.DTOs.Account;
+using HM_Instagram.BLL.Interfaces;
 using HM_Instagram.WEB.ViewModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace HomeWork_60_Identity.Controllers;
+namespace HM_Instagram.WEB.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly IWebHostEnvironment _env;
-    private readonly UserManager<MyUser> _userManager;
-    private readonly SignInManager<MyUser> _signInManager;
+    private readonly IAccountService _accountService;
 
-    public AccountController(UserManager<MyUser> userManager, SignInManager<MyUser> signInManager, IWebHostEnvironment env)
+    public AccountController(IAccountService accountService)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _env = env;
+        _accountService = accountService;
     }
+
     [HttpGet]
-    public IActionResult Register()
-    {
-        return View();
-    }
-    
-    
+    public IActionResult Register() => View();
+
     [HttpPost]
-    public async Task<IActionResult> Register(RegisterViewModel model, IFormFile file)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model, IFormFile? file)
     {
-        if (ModelState.IsValid)
+        if (file == null || file.Length == 0)
+            ModelState.AddModelError(string.Empty, "Выберите файл для профиля");
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        await using var stream = file!.OpenReadStream();
+        var result = await _accountService.RegisterAsync(new RegisterDto
         {
-            string? relativePath = null;
-            string uploadedFileName = Path.Combine(_env.WebRootPath, "images/avatars");
-            if (!Directory.Exists(uploadedFileName))
-            {
-                Directory.CreateDirectory(uploadedFileName);
-            }
-            
-            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            
-            string filesavePath = Path.Combine(uploadedFileName, fileName);
-            using (var stream = new FileStream(filesavePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-            relativePath = Path.Combine("images/avatars", fileName.Replace("\\", "/"));
-            MyUser user = new MyUser
-            {
-               UserName = model.Nickname,
-                Name = model.Name,
-                Email = model.Email,
-                Avatar = relativePath,
-                Desc = model.Desc,
-                Gender = model.Gender,
-                PhoneNumber = model.PhoneNumber,
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "user");
-                await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
-            }
-            foreach (var error in result.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
-        }
+            Nickname = model.Nickname,
+            Email = model.Email,
+            Password = model.Password,
+            Name = model.Name,
+            Desc = model.Desc,
+            Gender = model.Gender,
+            PhoneNumber = model.PhoneNumber,
+            Avatar = new UploadFileDto { FileName = file.FileName, Content = stream }
+        });
+
+        if (result.Succeeded)
+            return RedirectToAction("Index", "Home");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
         return View(model);
     }
 
     [HttpGet]
-    public IActionResult Login(string returnUrl = null)
-    {
-        return View(new LoginViewModel {ReturnUrl = returnUrl});
-    }
+    public IActionResult Login(string? returnUrl = null) =>
+        View(new LoginViewModel { ReturnUrl = returnUrl });
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (ModelState.IsValid)
-        {
-            MyUser user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                user = await _userManager.FindByNameAsync(model.Email);
-            }
-            if (user == null)
-            {
-                ModelState.AddModelError("","Пользователь не найден");
-                return View(model);
-            }
-            
-            SignInResult result = await _signInManager.PasswordSignInAsync(
-                user, model.Password, 
-                model.RememberMe,
-                false
-                );
-            if (result.Succeeded)
-            {
-                if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                {
-                    return Redirect(model.ReturnUrl);
-                }
+        if (!ModelState.IsValid)
+            return View(model);
 
-                return RedirectToAction("Index", "Home");
-            }
-            ModelState.AddModelError("", "Неправильный логин или пароль");
+        var result = await _accountService.LoginAsync(new LoginDto
+        {
+            Email = model.Email,
+            Password = model.Password,
+            RememberMe = model.RememberMe
+        });
+        if (result.Succeeded)
+        {
+            if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                return LocalRedirect(model.ReturnUrl);
+
+            return RedirectToAction("Index", "Home");
         }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
         return View(model);
     }
 
@@ -115,7 +83,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> LogOff()
     {
-        await _signInManager.SignOutAsync();
+        await _accountService.LogOffAsync();
         return RedirectToAction("Index", "Home");
     }
 }
