@@ -1,57 +1,65 @@
-﻿using HM_Instagram.WEB.Models;
+using System.Security.Claims;
+using HM_Instagram.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HM_Instagram.WEB.Controllers;
 
 public class CommentController : Controller
 {
-    private MyUserContext _context;
-    private readonly UserManager<MyUser> _userManager;
+    private readonly ICommentService _commentService;
 
-    public CommentController(UserManager<MyUser> userManager, MyUserContext context)
+    public CommentController(ICommentService commentService)
     {
-        _userManager = userManager;
-        _context = context;
+        _commentService = commentService;
     }
     [Authorize]
-    [ResponseCache(CacheProfileName = "Caching")]
-    public IActionResult Index(int PostId)
+
+    public async Task<IActionResult> Index(int PostId)
     {
-        var comments = _context.Comments.Include(u => u.User).Where(u => u.PostId == PostId);
+        var comments = await _commentService.GetCommentsAsync(PostId);
         if (comments == null)
         {
             return NotFound();
         }
-        return View(comments.ToList());
+        return View(comments);
     }
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [ResponseCache(CacheProfileName = "Caching")]
-    public IActionResult AddComment(int PostId, string commentText)
+    [ResponseCache(CacheProfileName = "NoCache")]
+    public async  Task<IActionResult> AddComment(int postId, string commentText)
     {
-        var post = _context.Posts.FirstOrDefault(p => p.Id == PostId);
-        if (post == null)
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
         {
-            return NotFound();
+            return Unauthorized();
         }
-        var userid = int.Parse(_userManager.GetUserId(User));
-        if (ModelState.IsValid && !string.IsNullOrEmpty(commentText))
+        if (!ModelState.IsValid)
         {
-            var comment = new Comments()
-            {
-                Comment = commentText,
-                PostId = PostId,
-                UserId = userid,
-                Created_DateTime = DateTime.UtcNow
-            };
-            _context.Comments.Add(comment);
-            _context.SaveChanges();
-            return RedirectToAction("Index", "Home", new { id = userid });
+            return RedirectToAction(
+                "Index",
+                "Comment",
+                new { PostId = postId });
         }
-        return RedirectToAction("Index", "Home", new { id = userid });
+        if (string.IsNullOrWhiteSpace(commentText))
+        {
+            ModelState.AddModelError(
+                nameof(commentText),
+                "Комментарий не может быть пустым.");
+
+            return RedirectToAction(
+                "Index",
+                "Comment",
+                new { PostId = postId });
+        }
+        var created = await _commentService.AddComment(
+            postId,
+            commentText,
+            userId);
+        if (!created)
+        {
+            TempData["ErrorMessage"] = "Комментарий не удалось добавить.";
+        }
+        return RedirectToAction("DetailInfo", "User", new { PostId = postId });
     }
 }

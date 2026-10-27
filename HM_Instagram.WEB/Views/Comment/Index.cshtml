@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Server.Kestrel.Core
-@model List<Comments>
+@model List<HM_Instagram.BLL.DTOs.GetCommentDto>
 
 @{
     ViewBag.Title = "Коментарии";
@@ -19,17 +19,17 @@ else
                 <h1>@localizer["AnyComments"]</h1>
             }
             <div class="d-flex align-items-start mb-2">
-                <img src="~/@comment.User.Avatar"
+                <img src="~/@comment.Avatar"
                      alt="avatar"
                      class="rounded-circle me-2"
                      width="32" height="32"
                      style="object-fit: cover;" />
 
                 <div>
-                    <strong>@comment.User.UserName</strong>
-                    <span>@comment.Comment</span>
+                    <strong>@comment.UserName</strong>
+                    <span>@comment.Content</span>
                     <div class="text-muted small">
-                        @comment.Created_DateTime.ToString("dd.MM.yyyy HH:mm")
+                        @comment..ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
             </div>
